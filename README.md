@@ -13,27 +13,33 @@
 
     Vercel - Deploy e hosting
 
-📦 Estrutura do Projeto
-text
-
+## 📦 Estrutura do Projeto
+```
 PALMAS-TEC-RPC/
-├── public/
-│   ├── vite.svg
-│   └── ...
-├── src/
-│   ├── components/
-│   │   ├── DataTable.tsx          # Tabela principal com ícones customizados
-│   │   ├── DataFilter.tsx         # Componente de filtros
-│   │   └── Header.tsx             # Cabeçalho da aplicação
-│   ├── App.tsx                    # Componente principal
-│   ├── main.tsx                   # Entry point
-│   └── ...
-├── package.json
-├── vite.config.ts
-├── tailwind.config.js
-├── tsconfig.json
-└── ...
-
+│
+├── 📁 public/
+│   ├── 🖼️ vite.svg
+│   └── 🔍 favicon.ico
+│
+├── 📁 src/
+│   ├── 📁 components/
+│   │   ├── ⚛️ DataTable.tsx          # Tabela principal com ícones customizados
+│   │   ├── ⚛️ DataFilter.tsx         # Componente de filtros
+│   │   └── ⚛️ Header.tsx             # Cabeçalho da aplicação
+│   │
+│   ├── ⚛️ App.tsx                    # Componente principal
+│   ├── ⚛️ main.tsx                   # Entry point do React
+│   ├── 🎨 index.css                  # Estilos globais
+│   └── 🏷️ vite-env.d.ts             # Tipos do Vite
+│
+├── 📄 package.json                   # Dependências e scripts
+├── 📄 vite.config.ts                 # Configuração do Vite
+├── 📄 tailwind.config.js             # Configuração do Tailwind
+├── 📄 tsconfig.json                  # Configuração do TypeScript
+├── 📄 tsconfig.node.json             # TS config para Node
+├── 📄 index.html                     # HTML principal
+└── 📄 README.md                      # Documentação
+```
 🛠️ Comandos Disponíveis
 bash
 
