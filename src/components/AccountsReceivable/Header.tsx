@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useTheme } from "../hooks/useTheme";
+import { useTheme } from "../../hooks/useTheme";
 import {
   Search,
   Bell,
@@ -14,18 +14,18 @@ import {
   Download,
   Printer,
   Send,
-  BookOpen,
-  ShoppingCart,
+  NotebookTabs,
+  Store,
   DollarSign,
   Building2,
-  BarChart3,
+  ChartColumnIncreasing,
   Moon,
   Sun,
 } from "lucide-react";
 
 // Importe as imagens do logo
-import HsoftBlack from "../assets/Hsoft-black.png";
-import HsoftWhite from "../assets/Hsoft-white.png";
+import HsoftBlack from "../../assets/Hsoft-black.png";
+import HsoftWhite from "../../assets/Hsoft-white.png";
 
 const Header: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
@@ -34,12 +34,12 @@ const Header: React.FC = () => {
 
   const navigationItems = [
     {
-      icon: BookOpen,
+      icon: NotebookTabs,
       label: "Cadastros",
       iconColor: "text-emerald-600 dark:text-emerald-400",
     },
     {
-      icon: ShoppingCart,
+      icon: Store,
       label: "Comercial",
       iconColor: "text-blue-600 dark:text-blue-400",
     },
@@ -54,7 +54,7 @@ const Header: React.FC = () => {
       iconColor: "text-purple-600 dark:text-purple-400",
     },
     {
-      icon: BarChart3,
+      icon: ChartColumnIncreasing,
       label: "Relatórios",
       iconColor: "text-cyan-600 dark:text-cyan-400",
     },
@@ -78,37 +78,31 @@ const Header: React.FC = () => {
             {/* Left Section: Logo + Navigation */}
             <div className="flex items-center space-x-6 flex-1">
               {/* Logo - AGORA COM IMAGENS */}
-              <div className="flex items-center justify-center w-40 h-10">
+              <div className="logo-container items-center">
                 {/* Imagem para tema claro */}
                 <img
                   src={HsoftBlack}
                   alt="Hsoft"
-                  className="block dark:hidden h-8 w-auto"
+                  className="block dark:hidden h-14 w-auto"
                 />
 
                 {/* Imagem para tema escuro */}
                 <img
                   src={HsoftWhite}
                   alt="Hsoft"
-                  className="hidden dark:block h-8 w-auto"
+                  className="hidden dark:block h-12 w-auto"
                 />
               </div>
-
               {/* Desktop Navigation */}
               <nav className="hidden lg:flex items-center space-x-1">
                 {navigationItems.map((item, index) => (
-                  <button
-                    key={index}
-                    className="flex items-center space-x-2 px-4 py-2 bg-white dark:bg-slate-800 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-all border border-gray-200 dark:border-slate-600"
-                  >
+                  <button key={index} className="btn-ghost">
                     <item.icon
-                      size={18}
-                      className={item.iconColor}
+                      size={27}
+                      className={`w-[27px] h-[27px] min-w-[27px] min-h-[27px] ${item.iconColor}`}
                       strokeWidth={2}
                     />
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                      {item.label}
-                    </span>
+                    <span>{item.label}</span>
                   </button>
                 ))}
               </nav>
@@ -130,24 +124,24 @@ const Header: React.FC = () => {
               {/* Icons - Responsivo */}
               <div className="flex items-center space-x-1 sm:space-x-3">
                 {/* Ícones que ficam HIDDEN no mobile */}
-                <button className="p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors hidden sm:flex">
+                <button className="p-2 hover:bg-yellow-100 dark:hover:bg-yellow-900/30 rounded-lg transition-colors hidden sm:flex">
                   <Bell
-                    size={20}
-                    className="text-gray-600 dark:text-gray-300"
+                    size={25}
+                    className="text-yellow-400 dark:text-yellow-300"
                   />
                 </button>
 
-                <button className="p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors hidden md:flex">
+                <button className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors hidden md:flex">
                   <HelpCircle
-                    size={20}
-                    className="text-gray-600 dark:text-gray-300"
+                    size={25}
+                    className="text-red-500 dark:text-red-400"
                   />
                 </button>
 
-                <button className="p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors hidden md:flex">
+                <button className="p-2 hover:bg-gray-50 dark:hover:bg-slate-700/70 rounded-lg transition-colors hidden md:flex">
                   <Settings
-                    size={20}
-                    className="text-gray-600 dark:text-gray-300"
+                    size={25}
+                    className="text-gray-400 dark:text-gray-500"
                   />
                 </button>
 
@@ -157,16 +151,16 @@ const Header: React.FC = () => {
                   className="p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
                 >
                   {theme === "light" ? (
-                    <Moon size={20} className="text-gray-600" />
+                    <Moon size={25} className="text-gray-600" />
                   ) : (
-                    <Sun size={20} className="text-amber-400" />
+                    <Sun size={25} className="text-amber-400" />
                   )}
                 </button>
 
                 {/* User - SEMPRE VISÍVEL */}
                 <button className="p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
                   <User
-                    size={20}
+                    size={25}
                     className="text-gray-600 dark:text-gray-300"
                   />
                 </button>
@@ -178,7 +172,7 @@ const Header: React.FC = () => {
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="lg:hidden p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
             >
-              {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+              {mobileMenuOpen ? <X size={25} /> : <Menu size={25} />}
             </button>
           </div>
         </div>
@@ -187,13 +181,12 @@ const Header: React.FC = () => {
       {/* CONTAS A RECEBER Section with Orange Line */}
       <div className="bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 relative">
         {/* Linha laranja em FULL WIDTH - FORA DO CONTAINER */}
-        <div className="absolute left-0 right-0 bottom-0 h-0.5 bg-[#F97316] dark:bg-orange-600"></div>
-
+        <div className="absolute left-0 right-0 bottom-0 h-0.5 bg-[var(--orange-primary)]"></div>
         <div className="max-w-full mx-auto px-4 relative z-10">
           <div className="flex items-center py-3">
             {/* Title */}
             <div className="flex items-center flex-1">
-              <div className="bg-[#F97316] dark:bg-orange-600 px-4 py-2 rounded-md">
+              <div className="header-title">
                 <h1 className="text-white text-lg font-bold tracking-wide">
                   CONTAS A RECEBER
                 </h1>
@@ -203,10 +196,7 @@ const Header: React.FC = () => {
             {/* Action Buttons */}
             <div className="hidden md:flex items-center space-x-2 ml-4">
               {actionButtons.map((btn, index) => (
-                <button
-                  key={index}
-                  className="flex items-center space-x-2 px-4 py-2 bg-white dark:bg-slate-800 text-orange-600 dark:text-orange-400 rounded-md hover:bg-orange-50 dark:hover:bg-slate-700 transition-all shadow-sm text-sm font-medium border border-orange-200 dark:border-orange-500/30"
-                >
+                <button key={index} className="btn-action">
                   <btn.icon size={16} strokeWidth={2} />
                   <span>{btn.label}</span>
                 </button>
@@ -251,7 +241,7 @@ const Header: React.FC = () => {
                 className="flex items-center space-x-3 w-full px-4 py-3 bg-white dark:bg-slate-800 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-all border border-gray-200 dark:border-slate-600"
               >
                 <item.icon
-                  size={20}
+                  size={25}
                   className={item.iconColor}
                   strokeWidth={2}
                 />

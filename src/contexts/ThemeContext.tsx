@@ -1,4 +1,4 @@
-import { createContext, useContext } from "react";
+import { createContext } from "react";
 
 export type Theme = "light" | "dark";
 
@@ -7,15 +7,4 @@ export interface ThemeContextType {
   toggleTheme: () => void;
 }
 
-export const ThemeContext = createContext<ThemeContextType | undefined>(
-  undefined
-);
-
-// Adicione o hook useTheme
-export const useTheme = () => {
-  const context = useContext(ThemeContext);
-  if (!context) {
-    throw new Error("useTheme must be used within ThemeProvider");
-  }
-  return context;
-};
+export const ThemeContext = createContext<ThemeContextType | undefined>(undefined);

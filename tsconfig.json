@@ -1,4 +1,16 @@
 {
+  "compilerOptions": {
+    // Necessário para o shadcn detectar o alias
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+
+    // Evita erro do TypeScript 7 sobre baseUrl
+    "ignoreDeprecations": "6.0"
+  },
+
+  // Mantém sua estrutura original
   "files": [],
   "references": [
     { "path": "./tsconfig.app.json" },
