@@ -38,9 +38,27 @@ interface NavigationItem {
 interface ActionButton {
   icon: LucideIcon;
   label: string;
+  onClick?: () => void;
 }
 
-const Header: React.FC = () => {
+// Props do componente Header
+interface HeaderProps {
+  onIncluirClick?: () => void; // Prop para receber a função do modal
+  onAlterarClick?: () => void;
+  onCancelaClick?: () => void;
+  onBaixaClick?: () => void;
+  onImprimirClick?: () => void;
+  onEnviarClick?: () => void;
+}
+
+const Header: React.FC<HeaderProps> = ({
+  onIncluirClick,
+  onAlterarClick,
+  onCancelaClick,
+  onBaixaClick,
+  onImprimirClick,
+  onEnviarClick,
+}) => {
   const { theme, toggleTheme } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
   const [mobileActionsOpen, setMobileActionsOpen] = useState<boolean>(false);
@@ -73,13 +91,38 @@ const Header: React.FC = () => {
     },
   ];
 
+  // Action buttons com callbacks das props
   const actionButtons: ActionButton[] = [
-    { icon: Plus, label: "Incluir" },
-    { icon: Edit3, label: "Alterar" },
-    { icon: Trash2, label: "Cancela" },
-    { icon: Download, label: "Baixa" },
-    { icon: Printer, label: "Imprimir" },
-    { icon: Send, label: "Enviar" },
+    {
+      icon: Plus,
+      label: "Incluir",
+      onClick: onIncluirClick,
+    },
+    {
+      icon: Edit3,
+      label: "Alterar",
+      onClick: onAlterarClick,
+    },
+    {
+      icon: Trash2,
+      label: "Cancela",
+      onClick: onCancelaClick,
+    },
+    {
+      icon: Download,
+      label: "Baixa",
+      onClick: onBaixaClick,
+    },
+    {
+      icon: Printer,
+      label: "Imprimir",
+      onClick: onImprimirClick,
+    },
+    {
+      icon: Send,
+      label: "Enviar",
+      onClick: onEnviarClick,
+    },
   ];
 
   // Handlers para melhor organização
@@ -89,6 +132,12 @@ const Header: React.FC = () => {
 
   const handleMobileActionsToggle = (): void => {
     setMobileActionsOpen(!mobileActionsOpen);
+  };
+
+  // Função padrão para botões sem callback
+  const defaultClickHandler = (label: string) => {
+    console.log(`Botão ${label} clicado - Função não implementada`);
+    // Você pode adicionar um toast ou alerta aqui se quiser
   };
 
   return (
@@ -219,7 +268,14 @@ const Header: React.FC = () => {
             {/* Action Buttons - Desktop */}
             <div className="hidden md:flex items-center space-x-2 ml-4">
               {actionButtons.map((btn, index) => (
-                <button key={`action-${index}`} className="btn-action">
+                <button
+                  key={`action-${index}`}
+                  className="btn-action"
+                  onClick={
+                    btn.onClick || (() => defaultClickHandler(btn.label))
+                  }
+                  title={btn.label}
+                >
                   <btn.icon size={16} strokeWidth={2} />
                   <span>{btn.label}</span>
                 </button>
@@ -244,6 +300,9 @@ const Header: React.FC = () => {
                   <button
                     key={`mobile-action-${index}`}
                     className="flex items-center space-x-2 px-3 py-2 text-orange-600 dark:text-orange-400 rounded-md hover:bg-orange-50 dark:hover:bg-slate-600 transition-colors text-sm font-medium"
+                    onClick={
+                      btn.onClick || (() => defaultClickHandler(btn.label))
+                    }
                   >
                     <btn.icon size={16} strokeWidth={2} />
                     <span>{btn.label}</span>
