@@ -20,7 +20,7 @@
 }
 
 body {
-  font-family: "Sora", system-ui, -apple-system, sans-serif;
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
@@ -74,10 +74,16 @@ body {
   /* BOTÃO COM BORDA LARANJA */
   .btn-action {
     @apply flex items-center space-x-2 px-4 py-2 bg-white dark:bg-slate-800 rounded-md
-           hover:bg-orange-50 dark:hover:bg-slate-700 transition-all shadow-sm text-sm font-medium border-2;
+         transition-all shadow-sm text-sm font-medium border-2
+         hover:bg-[var(--orange-primary)] hover:text-white;
 
     color: var(--orange-primary);
     border-color: var(--orange-primary);
+  }
+
+  .dark .btn-action:hover {
+    background-color: var(--orange-primary);
+    color: white;
   }
 
   .dark .btn-action {

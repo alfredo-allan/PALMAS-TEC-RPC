@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import SelectCliente from "@/components/AccountsReceivable/SelectCliente";
+import SelectCliente from "./SelectCliente";
 
 export type FieldType = "text" | "select" | "date" | "radio";
 
@@ -26,6 +26,13 @@ const inputBase =
   "bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 " +
   "focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-transparent text-sm";
 
+// Interface para os itens de configuração dos filtros
+interface FilterConfigItem {
+  label: string;
+  row: number;
+  col: number;
+}
+
 const DataFilter: React.FC<DataFilterProps> = ({ filters, onFilterChange }) => {
   const handleFieldChange = useCallback(
     (rowIndex: number, fieldIndex: number, value: string) => {
@@ -41,7 +48,7 @@ const DataFilter: React.FC<DataFilterProps> = ({ filters, onFilterChange }) => {
     rowIndex: number,
     fieldIndex: number
   ) => {
-    // Campos especiais com dropdown do Figma
+    // Campos especiais com dropdown customizado
     if (
       field.label === "Cliente" ||
       field.label === "Empresa" ||
@@ -125,17 +132,34 @@ const DataFilter: React.FC<DataFilterProps> = ({ filters, onFilterChange }) => {
     }
   };
 
+  // Configuração dos filtros da coluna esquerda
+  const leftColumnFilters = [
+    { label: "Cliente", path: filters[0]?.[0] },
+    { label: "Empresa", path: filters[1]?.[0] },
+    { label: "Vendedor", path: filters[2]?.[0] },
+  ];
+
+  // Configuração dos filtros da coluna direita - primeira linha
+  const rightColumnFirstRow: FilterConfigItem[] = [
+    { label: "Período", row: 0, col: 1 },
+    { label: "Tipo Data", row: 0, col: 2 },
+  ];
+
+  // Configuração dos filtros da coluna direita - segunda linha
+  const rightColumnSecondRow: FilterConfigItem[] = [
+    { label: "Nota Fiscal", row: 1, col: 1 },
+    { label: "Duplicata", row: 1, col: 2 },
+    { label: "Pedido", row: 1, col: 3 },
+    { label: "Orçamento", row: 1, col: 4 },
+  ];
+
   return (
     <div className="bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 shadow-sm">
       <div className="max-w-full mx-auto px-4 py-4">
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Coluna Esquerda */}
           <div className="flex-1 space-y-4">
-            {[
-              { label: "Cliente", path: filters[0]?.[0] },
-              { label: "Empresa", path: filters[1]?.[0] },
-              { label: "Vendedor", path: filters[2]?.[0] },
-            ].map((item, i) => (
+            {leftColumnFilters.map((item, i) => (
               <div key={i} className="space-y-1">
                 <label className="block text-sm font-semibold text-orange-600 dark:text-orange-400">
                   {item.label}
@@ -149,10 +173,7 @@ const DataFilter: React.FC<DataFilterProps> = ({ filters, onFilterChange }) => {
           <div className="flex-1 space-y-4">
             {/* Período + Tipo Data */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {[
-                { label: "Período", row: 0, col: 1 },
-                { label: "Tipo Data", row: 0, col: 2 },
-              ].map((item, i) => (
+              {rightColumnFirstRow.map((item, i) => (
                 <div key={i} className="space-y-1">
                   <label className="block text-sm font-semibold text-orange-600 dark:text-orange-400">
                     {item.label}
@@ -169,12 +190,7 @@ const DataFilter: React.FC<DataFilterProps> = ({ filters, onFilterChange }) => {
 
             {/* Nota Fiscal, Duplicata, Pedido, Orçamento */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {[
-                { label: "Nota Fiscal", row: 1, col: 1 },
-                { label: "Duplicata", row: 1, col: 2 },
-                { label: "Pedido", row: 1, col: 3 },
-                { label: "Orçamento", row: 1, col: 4 },
-              ].map((item, i) => (
+              {rightColumnSecondRow.map((item, i) => (
                 <div key={i} className="space-y-1">
                   <label className="block text-sm font-semibold text-orange-600 dark:text-orange-400">
                     {item.label}

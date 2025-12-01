@@ -1,13 +1,11 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { useState } from "react";
 import Header from "../components/AccountsReceivable/Header";
 import DataFilter from "../components/AccountsReceivable/DataFilter";
-import type { FilterField } from "../components/AccountsReceivable/DataFilter";
-import DataTable, {
-  type TableRow,
-} from "../components/AccountsReceivable/DataTable";
+import DataTable from "../components/AccountsReceivable/DataTable";
 
 export default function AccountsReceivable() {
-  const [filters, setFilters] = useState<FilterField[][]>([
+  const [filters, setFilters] = useState([
     [
       {
         label: "Cliente",
@@ -99,7 +97,7 @@ export default function AccountsReceivable() {
     ],
   ]);
 
-  const tableData: TableRow[] = [
+  const tableData = [
     {
       id: "1",
       cliente:
@@ -110,9 +108,9 @@ export default function AccountsReceivable() {
       parc: "10",
       vencimento: "04/11/2022",
       valor: "R$ 238,92",
-      dias: "5", // NOVO
-      multa: "R$ 11,95", // NOVO
-      juros: "R$ 4,78", // NOVO
+      dias: "5",
+      multa: "R$ 11,95",
+      juros: "R$ 4,78",
       valorTotal: "R$ 522,10",
     },
     {
@@ -125,9 +123,9 @@ export default function AccountsReceivable() {
       parc: "10",
       vencimento: "04/14/2022",
       valor: "R$ 238,92",
-      dias: "8", // NOVO
-      multa: "R$ 19,11", // NOVO
-      juros: "R$ 7,64", // NOVO
+      dias: "8",
+      multa: "R$ 19,11",
+      juros: "R$ 7,64",
       valorTotal: "R$ 522,10",
     },
     {
@@ -139,27 +137,33 @@ export default function AccountsReceivable() {
       parc: "10",
       vencimento: "31/10/2020",
       valor: "R$ 1.500,00",
-      dias: "15", // NOVO
-      multa: "R$ 75,00", // NOVO
-      juros: "R$ 30,00", // NOVO
+      dias: "15",
+      multa: "R$ 75,00",
+      juros: "R$ 30,00",
       valorTotal: "R$ 1.650,00",
     },
   ];
 
-  const handleRowSelect = (selectedRows: string[]) => {
+  const handleRowSelect = (selectedRows) => {
     console.log("Linhas selecionadas:", selectedRows);
   };
 
-  return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-950 transition-colors duration-300">
-      <Header />
-      <DataFilter filters={filters} onFilterChange={setFilters} />
-
-      <main className="max-w-full mx-auto py-8">
-        <div className="space-y-6">
-          <DataTable data={tableData} onRowSelect={handleRowSelect} />
-        </div>
-      </main>
-    </div>
-  );
+  return _jsxs("div", {
+    className:
+      "min-h-screen bg-gray-50 dark:bg-slate-950 transition-colors duration-300",
+    children: [
+      _jsx(Header, {}),
+      _jsx(DataFilter, { filters: filters, onFilterChange: setFilters }),
+      _jsx("main", {
+        className: "max-w-full mx-auto py-8",
+        children: _jsx("div", {
+          className: "space-y-6",
+          children: _jsx(DataTable, {
+            data: tableData,
+            onRowSelect: handleRowSelect,
+          }),
+        }),
+      }),
+    ],
+  });
 }

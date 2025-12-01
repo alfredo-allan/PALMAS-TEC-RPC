@@ -11,11 +11,15 @@ export interface TableRow {
   id: string;
   selected?: boolean;
   cliente: string;
-  codigo: string;
+  emp: string;
+  pedido: string;
+  nota: string;
+  parc: string;
   vencimento: string;
   valor: string;
-  duplicata: string;
-  valorDuplicata: string;
+  dias: string;
+  multa: string;
+  juros: string;
   valorTotal: string;
 }
 
@@ -23,6 +27,35 @@ export interface DataTableProps {
   data: TableRow[];
   onRowSelect?: (selectedRows: string[]) => void;
 }
+
+// Interface para as colunas
+interface TableColumn {
+  key: keyof TableRow;
+  label: string;
+  width: string;
+  align: string;
+  isBold?: boolean;
+}
+
+// Componente para os cards de totais
+const TotalCard: React.FC<{
+  icon: React.ComponentType<any>;
+  title: string;
+  value: string;
+  iconColor: string;
+}> = ({ icon: Icon, title, value, iconColor }) => (
+  <div className="flex items-center justify-center gap-2 font-bold flex-1 first:justify-start last:justify-end">
+    <Icon size={20} className={`${iconColor} flex-shrink-0 md:size-[27px]`} />
+    <div className="text-left">
+      <div className="text-xs md:text-sm text-gray-800 dark:text-gray-200">
+        {title}
+      </div>
+      <div className="text-gray-800 dark:text-gray-200 text-sm md:text-base">
+        {value}
+      </div>
+    </div>
+  </div>
+);
 
 const DataTable: React.FC<DataTableProps> = ({ data, onRowSelect }) => {
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
@@ -52,101 +85,103 @@ const DataTable: React.FC<DataTableProps> = ({ data, onRowSelect }) => {
     total: "R$ 10.200,00",
   };
 
+  // Definição das colunas na ORDEM CORRETA
+  const columns: TableColumn[] = [
+    {
+      key: "cliente",
+      label: "Cliente",
+      width: "min-w-[300px]",
+      align: "text-left",
+    },
+    { key: "emp", label: "Emp", width: "min-w-[50px]", align: "text-center" },
+    {
+      key: "pedido",
+      label: "Pedido",
+      width: "min-w-[60px]",
+      align: "text-center",
+    },
+    { key: "nota", label: "Nota", width: "min-w-[60px]", align: "text-center" },
+    { key: "parc", label: "Parc", width: "min-w-[50px]", align: "text-center" },
+    {
+      key: "vencimento",
+      label: "Vencimento",
+      width: "min-w-[80px]",
+      align: "text-center",
+    },
+    {
+      key: "valor",
+      label: "Valor",
+      width: "min-w-[90px]",
+      align: "text-right",
+    },
+    { key: "dias", label: "Dias", width: "min-w-[60px]", align: "text-center" },
+    {
+      key: "multa",
+      label: "Multa",
+      width: "min-w-[80px]",
+      align: "text-right",
+    },
+    {
+      key: "juros",
+      label: "Juros",
+      width: "min-w-[80px]",
+      align: "text-right",
+    },
+    {
+      key: "valorTotal",
+      label: "Total",
+      width: "min-w-[100px]",
+      align: "text-right",
+      isBold: true,
+    },
+  ];
+
   return (
-    <div className="bg-white dark:bg-slate-900 w-full rounded-lg border border-gray-300 dark:border-slate-700">
+    <div className="bg-white dark:bg-slate-900 w-full rounded-lg border border-gray-300 dark:border-slate-700 font-medium">
       <div className="overflow-x-auto w-full">
-        <table className="w-full min-w-[1000px]">
-          {/* HEADER COM ÍCONES - AGORA DENTRO DA TABELA */}
+        <table className="w-full min-w-[1200px]">
+          {/* HEADER COM ÍCONES */}
           <thead>
             {/* Primeira linha - Ícones */}
             <tr className="border-b border-gray-300 dark:border-slate-600 bg-gray-50 dark:bg-slate-800">
-              <td colSpan={8} className="p-2">
-                <div className="flex items-center justify-between w-full gap-1 md:gap-4">
-                  {/* Selecionados - Checkbox roxo #6D5AEC */}
-                  <div className="flex items-center justify-start gap-2 font-bold flex-1">
-                    <CheckSquare
-                      size={20}
-                      className="text-[#6D5AEC] flex-shrink-0 md:size-[27px]"
-                    />
-                    <div className="text-left">
-                      <div className="text-xs md:text-sm text-gray-800 dark:text-gray-200">
-                        Selecionados
-                      </div>
-                      <div className="text-gray-800 dark:text-gray-200 font-bold text-sm md:text-base">
-                        {totals.selecionados}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Vencidos - Interrogação vermelha #EF4D5F */}
-                  <div className="flex items-center justify-start gap-2 font-bold flex-1">
-                    <HelpCircle
-                      size={20}
-                      className="text-[#EF4D5F] flex-shrink-0 md:size-[27px]"
-                    />
-                    <div className="text-left">
-                      <div className="text-xs md:text-sm text-gray-800 dark:text-gray-200">
-                        Vencidos
-                      </div>
-                      <div className="text-gray-800 dark:text-gray-200 text-sm md:text-base">
-                        {totals.vencidos}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* A Vencer - Cronômetro laranja #E69000 */}
-                  <div className="flex items-center justify-start gap-2 font-bold flex-1">
-                    <Timer
-                      size={20}
-                      className="text-[#E69000] flex-shrink-0 md:size-[27px]"
-                    />
-                    <div className="text-left">
-                      <div className="text-xs md:text-sm text-gray-800 dark:text-gray-200">
-                        A Vencer
-                      </div>
-                      <div className="text-gray-800 dark:text-gray-200 text-sm md:text-base">
-                        {totals.aVencer}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Capital - Código de barras azul #2E4A8A */}
-                  <div className="flex items-center justify-start gap-2 font-bold flex-1">
-                    <Barcode
-                      size={20}
-                      className="text-[#2E4A8A] flex-shrink-0 md:size-[27px]"
-                    />
-                    <div className="text-left">
-                      <div className="text-xs md:text-sm text-gray-800 dark:text-gray-200">
-                        Capital
-                      </div>
-                      <div className="text-gray-800 dark:text-gray-200 text-sm md:text-base">
-                        {totals.capital}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Total - Caixa registradora verde #009300 */}
-                  <div className="flex items-center justify-start gap-2 font-bold flex-1">
-                    <DollarSign
-                      size={20}
-                      className="text-[#009300] flex-shrink-0 md:size-[27px]"
-                    />
-                    <div className="text-left">
-                      <div className="text-xs md:text-sm text-gray-800 dark:text-gray-200">
-                        Total
-                      </div>
-                      <div className="text-gray-800 dark:text-gray-200 font-bold text-sm md:text-base">
-                        {totals.total}
-                      </div>
-                    </div>
-                  </div>
+              <td colSpan={columns.length + 1} className="p-2">
+                <div className="flex items-center justify-center w-full gap-1 md:gap-12 px-4 md:px-12 mx-auto">
+                  <TotalCard
+                    icon={CheckSquare}
+                    title="Selecionados"
+                    value={totals.selecionados}
+                    iconColor="text-[#6D5AEC]"
+                  />
+                  <TotalCard
+                    icon={HelpCircle}
+                    title="Vencidos"
+                    value={totals.vencidos}
+                    iconColor="text-[#EF4D5F]"
+                  />
+                  <TotalCard
+                    icon={Timer}
+                    title="A Vencer"
+                    value={totals.aVencer}
+                    iconColor="text-[#E69000]"
+                  />
+                  <TotalCard
+                    icon={Barcode}
+                    title="Capital"
+                    value={totals.capital}
+                    iconColor="text-[#2E4A8A]"
+                  />
+                  <TotalCard
+                    icon={DollarSign}
+                    title="Total"
+                    value={totals.total}
+                    iconColor="text-[#009300]"
+                  />
                 </div>
               </td>
             </tr>
 
             {/* Segunda linha - Cabeçalhos das colunas */}
-            <tr className="border-b border-gray-300 dark:border-slate-600 bg-[var(--orange-primary)] h-[20px]">
+            <tr className="border-b border-gray-300 dark:border-slate-600 bg-[var(--orange-primary)] h-[24px]">
               {/* Checkbox seleção */}
               <th className="w-8 px-1 py-2 border-r border-gray-300 dark:border-slate-600">
                 <input
@@ -158,28 +193,20 @@ const DataTable: React.FC<DataTableProps> = ({ data, onRowSelect }) => {
                   className="rounded border-gray-400 dark:border-slate-500 text-[#6D5AEC] focus:ring-[#6D5AEC] bg-white dark:bg-slate-700"
                 />
               </th>
-              {/* Cabeçalhos */}
-              <th className="px-2 py-2 text-xs font-bold text-white text-left border-r border-gray-300 dark:border-slate-600 min-w-[300px]">
-                Cliente
-              </th>
-              <th className="px-1 py-2 text-xs font-bold text-white text-center border-r border-gray-300 dark:border-slate-600 min-w-[60px]">
-                Código
-              </th>
-              <th className="px-1 py-2 text-xs font-bold text-white text-center border-r border-gray-300 dark:border-slate-600 min-w-[80px]">
-                Vencimento
-              </th>
-              <th className="px-1 py-2 text-xs font-bold text-white text-right border-r border-gray-300 dark:border-slate-600 min-w-[90px]">
-                Valor
-              </th>
-              <th className="px-1 py-2 text-xs font-bold text-white text-center border-r border-gray-300 dark:border-slate-600 min-w-[70px]">
-                Duplicata
-              </th>
-              <th className="px-1 py-2 text-xs font-bold text-white text-right border-r border-gray-300 dark:border-slate-600 min-w-[90px]">
-                Valor Dup.
-              </th>
-              <th className="px-1 py-2 text-xs font-bold text-white text-right min-w-[100px]">
-                Valor Total
-              </th>
+
+              {/* Cabeçalhos das colunas na ORDEM CORRETA */}
+              {columns.map((column, index) => (
+                <th
+                  key={column.key}
+                  className={`px-1 py-2 text-xs font-bold text-white border-r border-gray-300 dark:border-slate-600 ${
+                    column.width
+                  } ${column.align} ${
+                    index === columns.length - 1 ? "" : "border-r"
+                  }`}
+                >
+                  {column.label}
+                </th>
+              ))}
             </tr>
           </thead>
 
@@ -203,32 +230,26 @@ const DataTable: React.FC<DataTableProps> = ({ data, onRowSelect }) => {
                   />
                 </td>
 
-                {/* Cliente */}
-                <td className="px-2 py-1 border-r border-gray-300 dark:border-slate-600">
+                {/* Cliente com formatação especial */}
+                <td className="px-2 py-1 border-r border-gray-300 dark:border-slate-600 font-medium">
                   <div className="text-xs text-gray-800 dark:text-gray-200 whitespace-nowrap">
                     {row.cliente}
                   </div>
                 </td>
 
-                {/* Demais colunas */}
-                <td className="px-1 py-1 text-xs text-gray-800 dark:text-gray-200 text-center border-r border-gray-300 dark:border-slate-600">
-                  {row.codigo}
-                </td>
-                <td className="px-1 py-1 text-xs text-gray-800 dark:text-gray-200 text-center border-r border-gray-300 dark:border-slate-600">
-                  {row.vencimento}
-                </td>
-                <td className="px-1 py-1 text-xs text-gray-800 dark:text-gray-200 text-right border-r border-gray-300 dark:border-slate-600">
-                  {row.valor}
-                </td>
-                <td className="px-1 py-1 text-xs text-gray-800 dark:text-gray-200 text-center border-r border-gray-300 dark:border-slate-600">
-                  {row.duplicata}
-                </td>
-                <td className="px-1 py-1 text-xs text-gray-800 dark:text-gray-200 text-right border-r border-gray-300 dark:border-slate-600">
-                  {row.valorDuplicata}
-                </td>
-                <td className="px-1 py-1 text-xs text-gray-800 dark:text-gray-200 text-right font-bold">
-                  {row.valorTotal}
-                </td>
+                {/* Demais colunas na ORDEM CORRETA */}
+                {columns.slice(1).map((column) => (
+                  <td
+                    key={`${row.id}-${column.key}`}
+                    className={`px-1 py-1 text-xs text-gray-800 dark:text-gray-200 ${
+                      column.align
+                    } border-r border-gray-300 dark:border-slate-600 ${
+                      column.isBold ? "font-bold" : ""
+                    }`}
+                  >
+                    {row[column.key]}
+                  </td>
+                ))}
               </tr>
             ))}
           </tbody>

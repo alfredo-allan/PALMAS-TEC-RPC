@@ -21,18 +21,31 @@ import {
   ChartColumnIncreasing,
   Moon,
   Sun,
+  LucideIcon,
 } from "lucide-react";
 
 // Importe as imagens do logo
 import HsoftBlack from "../../assets/Hsoft-black.png";
 import HsoftWhite from "../../assets/Hsoft-white.png";
 
+// Interfaces para tipagem
+interface NavigationItem {
+  icon: LucideIcon;
+  label: string;
+  iconColor: string;
+}
+
+interface ActionButton {
+  icon: LucideIcon;
+  label: string;
+}
+
 const Header: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [mobileActionsOpen, setMobileActionsOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
+  const [mobileActionsOpen, setMobileActionsOpen] = useState<boolean>(false);
 
-  const navigationItems = [
+  const navigationItems: NavigationItem[] = [
     {
       icon: NotebookTabs,
       label: "Cadastros",
@@ -60,7 +73,7 @@ const Header: React.FC = () => {
     },
   ];
 
-  const actionButtons = [
+  const actionButtons: ActionButton[] = [
     { icon: Plus, label: "Incluir" },
     { icon: Edit3, label: "Alterar" },
     { icon: Trash2, label: "Cancela" },
@@ -68,6 +81,15 @@ const Header: React.FC = () => {
     { icon: Printer, label: "Imprimir" },
     { icon: Send, label: "Enviar" },
   ];
+
+  // Handlers para melhor organização
+  const handleMobileMenuToggle = (): void => {
+    setMobileMenuOpen(!mobileMenuOpen);
+  };
+
+  const handleMobileActionsToggle = (): void => {
+    setMobileActionsOpen(!mobileActionsOpen);
+  };
 
   return (
     <header className="bg-white dark:bg-slate-900 font-sora transition-colors duration-300">
@@ -77,26 +99,24 @@ const Header: React.FC = () => {
           <div className="flex items-center justify-between h-16">
             {/* Left Section: Logo + Navigation */}
             <div className="flex items-center space-x-6 flex-1">
-              {/* Logo - AGORA COM IMAGENS */}
+              {/* Logo com imagens para temas claro e escuro */}
               <div className="logo-container items-center">
-                {/* Imagem para tema claro */}
                 <img
                   src={HsoftBlack}
                   alt="Hsoft"
-                  className="block dark:hidden h-14 w-auto"
+                  className="block dark:hidden h-12 w-auto"
                 />
-
-                {/* Imagem para tema escuro */}
                 <img
                   src={HsoftWhite}
                   alt="Hsoft"
                   className="hidden dark:block h-12 w-auto"
                 />
               </div>
+
               {/* Desktop Navigation */}
               <nav className="hidden lg:flex items-center space-x-1">
                 {navigationItems.map((item, index) => (
-                  <button key={index} className="btn-ghost">
+                  <button key={`nav-${index}`} className="btn-ghost">
                     <item.icon
                       size={27}
                       className={`w-[27px] h-[27px] min-w-[27px] min-h-[27px] ${item.iconColor}`}
@@ -120,7 +140,6 @@ const Header: React.FC = () => {
                 />
               </div>
 
-              {/* Icons */}
               {/* Icons - Responsivo */}
               <div className="flex items-center space-x-1 sm:space-x-3">
                 {/* Ícones que ficam HIDDEN no mobile */}
@@ -149,6 +168,9 @@ const Header: React.FC = () => {
                 <button
                   onClick={toggleTheme}
                   className="p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                  aria-label={`Mudar para tema ${
+                    theme === "light" ? "escuro" : "claro"
+                  }`}
                 >
                   {theme === "light" ? (
                     <Moon size={25} className="text-gray-600" />
@@ -169,8 +191,9 @@ const Header: React.FC = () => {
 
             {/* Mobile Menu Button */}
             <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              onClick={handleMobileMenuToggle}
               className="lg:hidden p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+              aria-label={mobileMenuOpen ? "Fechar menu" : "Abrir menu"}
             >
               {mobileMenuOpen ? <X size={25} /> : <Menu size={25} />}
             </button>
@@ -180,7 +203,7 @@ const Header: React.FC = () => {
 
       {/* CONTAS A RECEBER Section with Orange Line */}
       <div className="bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 relative">
-        {/* Linha laranja em FULL WIDTH - FORA DO CONTAINER */}
+        {/* Linha laranja em FULL WIDTH */}
         <div className="absolute left-0 right-0 bottom-0 h-0.5 bg-[var(--orange-primary)]"></div>
         <div className="max-w-full mx-auto px-4 relative z-10">
           <div className="flex items-center py-3">
@@ -193,20 +216,21 @@ const Header: React.FC = () => {
               </div>
             </div>
 
-            {/* Action Buttons */}
+            {/* Action Buttons - Desktop */}
             <div className="hidden md:flex items-center space-x-2 ml-4">
               {actionButtons.map((btn, index) => (
-                <button key={index} className="btn-action">
+                <button key={`action-${index}`} className="btn-action">
                   <btn.icon size={16} strokeWidth={2} />
                   <span>{btn.label}</span>
                 </button>
               ))}
             </div>
 
-            {/* Mobile Actions Menu */}
+            {/* Mobile Actions Menu Button */}
             <button
-              onClick={() => setMobileActionsOpen(!mobileActionsOpen)}
+              onClick={handleMobileActionsToggle}
               className="md:hidden p-2 bg-white dark:bg-slate-700 rounded-md text-orange-600 dark:text-orange-400 shadow-sm ml-4"
+              aria-label="Ações"
             >
               <Menu size={18} />
             </button>
@@ -218,7 +242,7 @@ const Header: React.FC = () => {
               <div className="bg-white dark:bg-slate-700 rounded-lg shadow-lg p-2 grid grid-cols-2 gap-2">
                 {actionButtons.map((btn, index) => (
                   <button
-                    key={index}
+                    key={`mobile-action-${index}`}
                     className="flex items-center space-x-2 px-3 py-2 text-orange-600 dark:text-orange-400 rounded-md hover:bg-orange-50 dark:hover:bg-slate-600 transition-colors text-sm font-medium"
                   >
                     <btn.icon size={16} strokeWidth={2} />
@@ -237,7 +261,7 @@ const Header: React.FC = () => {
           <nav className="px-4 py-3 space-y-2">
             {navigationItems.map((item, index) => (
               <button
-                key={index}
+                key={`mobile-nav-${index}`}
                 className="flex items-center space-x-3 w-full px-4 py-3 bg-white dark:bg-slate-800 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-all border border-gray-200 dark:border-slate-600"
               >
                 <item.icon
