@@ -1,8 +1,18 @@
-// ModalIncludeInstallment.tsx
-import React, { useState } from "react";
-import { X, Search, Calendar } from "lucide-react";
+// ModalIncludeInstallment.tsx - VERSÃO COM COMMAND PARA CLIENTE
+"use client";
 
-// Tipos para os props do modal
+import React, { useState } from "react";
+import { X, Search, Calendar, Copy } from "lucide-react";
+import {
+  CommandDialog,
+  CommandInput,
+  CommandList,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+} from "@/components/ui/command";
+
+// Tipos
 interface ModalIncludeInstallmentProps {
   isOpen: boolean;
   onClose: () => void;
@@ -10,7 +20,6 @@ interface ModalIncludeInstallmentProps {
   initialData?: ParcelaData;
 }
 
-// Interface para os dados do formulário
 interface ParcelaData {
   fatura: string;
   cliente: string;
@@ -26,7 +35,6 @@ interface ParcelaData {
   observacao: string;
 }
 
-// Dados fictícios para exemplo
 const mockData: ParcelaData = {
   fatura: "77",
   cliente: "1652 - WEB PALMAS PAPELARIA E INFORMATICA - 10.552.934/0001-90",
@@ -42,6 +50,32 @@ const mockData: ParcelaData = {
   observacao: "",
 };
 
+// Dados dos clientes extraídos da página principal
+const clientesOptions = [
+  {
+    value: "1652 - WEB PALMAS PAPELARIA E INFORMATICA - 10.552.934/0001-90",
+    label: "1652 - WEB PALMAS PAPELARIA E INFORMATICA",
+    details: "10.552.934/0001-90",
+  },
+  {
+    value:
+      "15 - SOLUGAO TI ASSISTENCIA TECNICA EM INFORMATICA LTDA - 10.552.934/C 2",
+    label: "15 - SOLUGAO TI ASSISTENCIA TECNICA EM INFORMATICA LTDA",
+    details: "10.552.934/C 2",
+  },
+  {
+    value:
+      "15- SOLUGAO TI ASSISTENCIA TECNICA EM INFORMATICA LTDA - 10.552.934/C 2",
+    label: "15- SOLUGAO TI ASSISTENCIA TECNICA EM INFORMATICA LTDA",
+    details: "10.552.934/C 2",
+  },
+  {
+    value: "Outro cliente",
+    label: "Outro cliente",
+    details: "Selecione para personalizar",
+  },
+];
+
 const ModalIncludeInstallment: React.FC<ModalIncludeInstallmentProps> = ({
   isOpen,
   onClose,
@@ -49,7 +83,7 @@ const ModalIncludeInstallment: React.FC<ModalIncludeInstallmentProps> = ({
   initialData = mockData,
 }) => {
   const [formData, setFormData] = useState<ParcelaData>(initialData);
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [clienteSearchOpen, setClienteSearchOpen] = useState(false);
 
   if (!isOpen) return null;
 
@@ -58,6 +92,11 @@ const ModalIncludeInstallment: React.FC<ModalIncludeInstallmentProps> = ({
       ...prev,
       [field]: value,
     }));
+  };
+
+  const handleSelectCliente = (selectedValue: string) => {
+    handleInputChange("cliente", selectedValue);
+    setClienteSearchOpen(false);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -69,144 +108,159 @@ const ModalIncludeInstallment: React.FC<ModalIncludeInstallmentProps> = ({
   };
 
   return (
-    <div
-      className={`fixed inset-0 z-50 flex items-center justify-center ${
-        isDarkMode ? "dark" : ""
-      }`}
-    >
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/50 dark:bg-black/70"
         onClick={onClose}
       />
 
-      {/* Modal Container - 777x585px */}
+      {/* Modal Container - Responsivo */}
       <div
-        className="relative w-[777px] h-[585px] bg-white dark:bg-slate-800 rounded-lg shadow-2xl"
+        className="relative w-full max-w-[777px] max-h-[90vh] overflow-y-auto bg-white dark:bg-slate-800 rounded-lg shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Cabeçalho Laranja */}
+        {/* Cabeçalho */}
         <div className="w-full h-[40px] border-b border-gray-200 dark:border-slate-700 rounded-t-lg flex items-center justify-between px-4">
-          <h2 className="text-[#e66400] dark:text-[#e66400] font-bold text-lg">
+          <h2 className="text-[color:var(--orange-primary)] font-bold text-lg">
             Incluir Parcela Avulsa
           </h2>
           <button
             onClick={onClose}
-            className="text-[#e66400] dark:text-[#e66400] hover:bg-orange-50 dark:hover:bg-orange-900/20 p-1 rounded transition-colors"
+            className="text-[color:var(--orange-primary)] hover:bg-orange-50 dark:hover:bg-orange-900/20 p-1 rounded transition-colors"
             aria-label="Fechar modal"
           >
             <X size={20} />
           </button>
         </div>
-        {/* Conteúdo do Modal */}
-        <div className="p-4 h-[calc(585px-40px)] overflow-y-auto">
-          <form onSubmit={handleSubmit} className="space-y-[20.30px]">
-            {/* Linha 1: Fatura */}
-            <div className="space-y-1">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Fatura
-              </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  value={formData.fatura}
-                  onChange={(e) => handleInputChange("fatura", e.target.value)}
-                  className="w-[239px] h-[28px] px-3 text-sm border border-gray-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#e66400] focus:border-transparent"
-                />
-                <Search
-                  size={16}
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[#e66400]"
-                />
+
+        <div className="p-3">
+          <form onSubmit={handleSubmit} className="h-full flex flex-col">
+            {/* LINHAS 1-4: Campos superiores - RESPONSIVO */}
+            <div className="space-y-4 md:grid md:grid-cols-2 md:gap-x-4 md:gap-y-[8px] mb-4 md:mb-[8px]">
+              {/* Fatura */}
+              <div className="md:col-span-1">
+                <label className="block text-sm font-medium text-[color:var(--orange-primary)] mb-1">
+                  Fatura
+                </label>
+                <div className="relative w-[239px]">
+                  <input
+                    type="text"
+                    value={formData.fatura}
+                    onChange={(e) =>
+                      handleInputChange("fatura", e.target.value)
+                    }
+                    className="w-full h-[28px] px-3 pr-8 text-sm border border-gray-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[color:var(--orange-primary)] focus:border-transparent"
+                  />
+                  <Copy
+                    size={16}
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none"
+                  />
+                </div>
+              </div>
+
+              {/* EMPTY DIV para manter grid */}
+              <div className="hidden md:block"></div>
+
+              {/* CLIENTE COM COMMAND */}
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-[color:var(--orange-primary)] mb-1">
+                  Cliente
+                </label>
+                <div className="relative">
+                  {/* Input somente leitura que abre o Command */}
+                  <input
+                    type="text"
+                    value={formData.cliente}
+                    readOnly
+                    onClick={() => setClienteSearchOpen(true)}
+                    className="w-full md:w-[756px] h-[28px] px-3 pr-8 text-sm border border-gray-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[color:var(--orange-primary)] focus:border-transparent cursor-pointer hover:border-[color:var(--orange-primary)]"
+                  />
+                  {/* Botão do ícone Search */}
+                  <button
+                    type="button"
+                    onClick={() => setClienteSearchOpen(true)}
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 p-1 hover:bg-orange-50 dark:hover:bg-orange-900/10 rounded"
+                  >
+                    <Search
+                      size={16}
+                      className="text-[color:var(--orange-primary)]"
+                    />
+                  </button>
+                </div>
+              </div>
+
+              {/* Vendedor */}
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-[color:var(--orange-primary)] mb-1">
+                  Vendedor
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={formData.vendedor}
+                    onChange={(e) =>
+                      handleInputChange("vendedor", e.target.value)
+                    }
+                    className="w-full md:w-[757px] h-[28px] px-3 pr-8 text-sm border border-gray-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[color:var(--orange-primary)] focus:border-transparent"
+                  />
+                  <Search
+                    size={16}
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[color:var(--orange-primary)] pointer-events-none"
+                  />
+                </div>
+              </div>
+
+              {/* Empresa */}
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-[color:var(--orange-primary)] mb-1">
+                  Empresa
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={formData.empresa}
+                    onChange={(e) =>
+                      handleInputChange("empresa", e.target.value)
+                    }
+                    className="w-full md:w-[756px] h-[28px] px-3 pr-8 text-sm border border-gray-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[color:var(--orange-primary)] focus:border-transparent"
+                  />
+                  <Search
+                    size={16}
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[color:var(--orange-primary)] pointer-events-none"
+                  />
+                </div>
               </div>
             </div>
 
-            {/* Linha 2: Cliente */}
-            <div className="space-y-1">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Cliente
-              </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  value={formData.cliente}
-                  onChange={(e) => handleInputChange("cliente", e.target.value)}
-                  className="w-full h-[28px] px-3 text-sm border border-gray-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#e66400] focus:border-transparent"
-                />
-                <Search
-                  size={16}
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[#e66400]"
-                />
-              </div>
-            </div>
-
-            {/* Linha 3: Empresa */}
-            <div className="space-y-1">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Empresa
-              </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  value={formData.empresa}
-                  onChange={(e) => handleInputChange("empresa", e.target.value)}
-                  className="w-full h-[28px] px-3 text-sm border border-gray-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#e66400] focus:border-transparent"
-                />
-                <Search
-                  size={16}
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[#e66400]"
-                />
-              </div>
-            </div>
-
-            {/* Linha 4: Vendedor */}
-            <div className="space-y-1">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Vendedor
-              </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  value={formData.vendedor}
-                  onChange={(e) =>
-                    handleInputChange("vendedor", e.target.value)
-                  }
-                  className="w-full h-[28px] px-3 text-sm border border-gray-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#e66400] focus:border-transparent"
-                />
-                <Search
-                  size={16}
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[#e66400]"
-                />
-              </div>
-            </div>
-
-            {/* Grid com duas colunas */}
-            <div className="grid grid-cols-2 gap-4 mt-6">
-              {/* Coluna da Esquerda */}
-              <div className="space-y-[20.30px]">
+            {/* LINHAS 5-10: Grid 2 colunas - RESPONSIVO */}
+            <div className="flex flex-col lg:grid lg:grid-cols-2 lg:items-start mb-4 md:mb-[8px]">
+              {/* COLUNA ESQUERDA */}
+              <div className="space-y-4 md:space-y-[8px] mb-4 lg:mb-0">
                 {/* Data da Fatura */}
-                <div className="space-y-1">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <div>
+                  <label className="block text-sm font-medium text-[color:var(--orange-primary)] mb-1">
                     Data da fatura
                   </label>
-                  <div className="relative">
+                  <div className="relative w-full md:w-[239px]">
                     <input
                       type="text"
                       value={formData.dataFatura}
                       onChange={(e) =>
                         handleInputChange("dataFatura", e.target.value)
                       }
-                      className="w-[239px] h-[28px] px-3 text-sm border border-gray-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#e66400] focus:border-transparent"
+                      className="w-full h-[28px] px-3 pr-8 text-sm border border-gray-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[color:var(--orange-primary)] focus:border-transparent"
                     />
                     <Calendar
                       size={16}
-                      className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[#e66400]"
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[color:var(--orange-primary)] pointer-events-none"
                     />
                   </div>
                 </div>
 
-                {/* Valor Total */}
-                <div className="space-y-1">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                {/* VALOR TOTAL */}
+                <div>
+                  <label className="block text-sm font-medium text-[color:var(--orange-primary)] mb-1">
                     Valor Total
                   </label>
                   <input
@@ -215,13 +269,13 @@ const ModalIncludeInstallment: React.FC<ModalIncludeInstallmentProps> = ({
                     onChange={(e) =>
                       handleInputChange("valorTotal", e.target.value)
                     }
-                    className="w-[239px] h-[28px] px-3 text-sm border border-gray-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#e66400] focus:border-transparent"
+                    className="w-full md:w-[239px] h-[28px] px-3 text-sm border border-gray-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[color:var(--orange-primary)] focus:border-transparent"
                   />
                 </div>
 
-                {/* Pedido */}
-                <div className="space-y-1">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                {/* PEDIDO */}
+                <div>
+                  <label className="block text-sm font-medium text-[color:var(--orange-primary)] mb-1">
                     Pedido
                   </label>
                   <input
@@ -230,55 +284,55 @@ const ModalIncludeInstallment: React.FC<ModalIncludeInstallmentProps> = ({
                     onChange={(e) =>
                       handleInputChange("pedido", e.target.value)
                     }
-                    className="w-[239px] h-[28px] px-3 text-sm border border-gray-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#e66400] focus:border-transparent"
+                    className="w-full md:w-[239px] h-[28px] px-3 text-sm border border-gray-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[color:var(--orange-primary)] focus:border-transparent"
                   />
                 </div>
 
-                {/* Nota */}
-                <div className="space-y-1">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                {/* NOTA */}
+                <div>
+                  <label className="block text-sm font-medium text-[color:var(--orange-primary)] mb-1">
                     Nota
                   </label>
                   <input
                     type="text"
                     value={formData.nota}
                     onChange={(e) => handleInputChange("nota", e.target.value)}
-                    className="w-[239px] h-[28px] px-3 text-sm border border-gray-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#e66400] focus:border-transparent"
+                    className="w-full md:w-[239px] h-[28px] px-3 text-sm border border-gray-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[color:var(--orange-primary)] focus:border-transparent"
                   />
                 </div>
 
-                {/* Cupom */}
-                <div className="space-y-1">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                {/* CUPOM */}
+                <div>
+                  <label className="block text-sm font-medium text-[color:var(--orange-primary)] mb-1">
                     Cupom
                   </label>
                   <input
                     type="text"
                     value={formData.cupom}
                     onChange={(e) => handleInputChange("cupom", e.target.value)}
-                    className="w-[239px] h-[28px] px-3 text-sm border border-gray-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#e66400] focus:border-transparent"
+                    className="w-full md:w-[239px] h-[28px] px-3 text-sm border border-gray-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[color:var(--orange-primary)] focus:border-transparent"
                   />
                 </div>
 
                 {/* O.S. */}
-                <div className="space-y-1">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <div>
+                  <label className="block text-sm font-medium text-[color:var(--orange-primary)] mb-1">
                     O.S.
                   </label>
                   <input
                     type="text"
                     value={formData.os}
                     onChange={(e) => handleInputChange("os", e.target.value)}
-                    className="w-[239px] h-[28px] px-3 text-sm border border-gray-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#e66400] focus:border-transparent"
+                    className="w-full md:w-[239px] h-[28px] px-3 text-sm border border-gray-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[color:var(--orange-primary)] focus:border-transparent"
                   />
                 </div>
               </div>
 
-              {/* Coluna da Direita */}
-              <div className="space-y-[20.30px]">
+              {/* COLUNA DIREITA */}
+              <div className="flex flex-col lg:h-[221px] lg:w-[514px] lg:-ml-[134px]">
                 {/* Histórico */}
-                <div className="space-y-1">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <div className="mb-2">
+                  <label className="block text-sm font-medium text-[color:var(--orange-primary)] mb-1">
                     Histórico
                   </label>
                   <input
@@ -287,13 +341,13 @@ const ModalIncludeInstallment: React.FC<ModalIncludeInstallmentProps> = ({
                     onChange={(e) =>
                       handleInputChange("historico", e.target.value)
                     }
-                    className="w-full h-[28px] px-3 text-sm border border-gray-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#e66400] focus:border-transparent"
+                    className="w-full lg:w-[510px] h-[28px] px-3 text-sm border border-gray-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[color:var(--orange-primary)] focus:border-transparent"
                   />
                 </div>
 
                 {/* Observação */}
-                <div className="space-y-1">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <div className="flex-1 flex flex-col">
+                  <label className="block text-sm font-medium text-[color:var(--orange-primary)] mb-1">
                     Observação
                   </label>
                   <textarea
@@ -301,31 +355,83 @@ const ModalIncludeInstallment: React.FC<ModalIncludeInstallmentProps> = ({
                     onChange={(e) =>
                       handleInputChange("observacao", e.target.value)
                     }
-                    className="w-full h-[221px] px-3 py-2 text-sm border border-gray-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#e66400] focus:border-transparent resize-none"
+                    className="w-full lg:w-[510px] min-h-[150px] lg:h-[221px] px-3 py-2 text-sm border border-gray-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[color:var(--orange-primary)] focus:border-transparent resize-none"
                   />
                 </div>
               </div>
             </div>
 
-            {/* Botões de Ação */}
-            <div className="flex justify-end space-x-3 pt-6 mt-4 border-t border-gray-200 dark:border-slate-700">
-              <button
-                type="button"
-                onClick={onClose}
-                className="px-6 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-slate-700 rounded hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors"
-              >
-                Fechar
-              </button>
-              <button
-                type="submit"
-                className="px-6 py-2 text-sm font-medium text-white bg-[#e66400] rounded hover:bg-[#d45a00] transition-colors"
-              >
-                OK
-              </button>
+            {/* LINHA 11: Botões */}
+            <div className="pt-2 mt-[8px] border-t border-gray-200 dark:border-slate-700">
+              <div className="flex flex-col sm:flex-row justify-end sm:space-x-3 space-y-2 sm:space-y-0">
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="px-6 py-2 text-sm font-medium text-[color:var(--orange-primary)] bg-gray-100 dark:bg-slate-700 rounded hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors order-2 sm:order-1"
+                >
+                  Fechar
+                </button>
+                <button
+                  type="submit"
+                  className="px-6 py-2 text-sm font-medium text-white bg-[color:var(--orange-primary)] rounded hover:bg-[#d45a00] transition-colors order-1 sm:order-2"
+                >
+                  OK
+                </button>
+              </div>
             </div>
           </form>
         </div>
       </div>
+
+      {/* COMMAND DIALOG PARA BUSCA DE CLIENTE - COM ESTILO PERSONALIZADO */}
+      <CommandDialog
+        open={clienteSearchOpen}
+        onOpenChange={setClienteSearchOpen}
+      >
+        <CommandInput
+          placeholder="Buscar cliente por nome, código ou CNPJ..."
+          className="border-0 focus:ring-0 h-12 rounded-none"
+        />
+        <CommandList className="max-h-[400px]">
+          <CommandEmpty className="py-6 text-center text-sm text-gray-500 dark:text-gray-400">
+            Nenhum cliente encontrado.
+          </CommandEmpty>
+          <CommandGroup heading="Clientes disponíveis">
+            {clientesOptions.map((cliente) => (
+              <CommandItem
+                key={cliente.value}
+                value={cliente.value}
+                onSelect={handleSelectCliente}
+                className="relative flex gap-2 select-none items-center rounded-sm text-sm outline-none
+            data-[disabled=true]:pointer-events-none
+            data-[selected=true]:bg-[color:var(--orange-primary)]
+            data-[selected=true]:text-white
+            data-[disabled=true]:opacity-50
+            [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0
+            px-4 py-2 cursor-pointer
+            hover:bg-orange-50 dark:hover:bg-slate-700
+            border-b border-gray-100 dark:border-slate-600 last:border-b-0"
+              >
+                <div className="flex flex-col w-full">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-gray-900 dark:text-gray-100 group-data-[selected=true]:text-white">
+                      {cliente.label.split(" - ")[0]}
+                    </span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400 group-data-[selected=true]:text-orange-100">
+                      {cliente.label.split(" - ")[1]}
+                    </span>
+                  </div>
+                  {cliente.details && (
+                    <span className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 group-data-[selected=true]:text-orange-100">
+                      {cliente.details}
+                    </span>
+                  )}
+                </div>
+              </CommandItem>
+            ))}
+          </CommandGroup>
+        </CommandList>
+      </CommandDialog>
     </div>
   );
 };

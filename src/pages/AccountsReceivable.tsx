@@ -5,7 +5,7 @@ import type { FilterField } from "../components/AccountsReceivable/DataFilter";
 import DataTable, {
   type TableRow,
 } from "../components/AccountsReceivable/DataTable";
-import ModalIncluirParcela from "../components/AccountsReceivable/ModalIncludeInstallment";
+import ModalIncludeInstallment from "../components/AccountsReceivable/ModalIncludeInstallment";
 
 // Interface para os dados do formulário do modal
 interface ParcelaData {
@@ -216,7 +216,7 @@ export default function AccountsReceivable() {
       </main>
 
       {/* Modal de Incluir Parcela */}
-      <ModalIncluirParcela
+      <ModalIncludeInstallment
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         onConfirm={handleConfirmModal}
