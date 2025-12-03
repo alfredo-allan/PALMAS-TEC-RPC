@@ -6,6 +6,8 @@ import DataTable, {
   type TableRow,
 } from "../components/AccountsReceivable/DataTable";
 import ModalIncludeInstallment from "../components/AccountsReceivable/ModalIncludeInstallment";
+import ModalGenerateInstallments from "../components/AccountsReceivable/ModalGenerateInstallment";
+import { useGenerateInstallmentsModal } from "@/components/AccountsReceivable/hooks/useGenerateInstallmentsModal";
 
 // Interface para os dados do formulário do modal
 interface ParcelaData {
@@ -40,8 +42,11 @@ const mockParcelaData: ParcelaData = {
 };
 
 export default function AccountsReceivable() {
-  // Estado para controlar o modal
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  // Estado para controlar o modal Incluir Parcela
+  const [isIncludeModalOpen, setIsIncludeModalOpen] = useState(false);
+
+  // Hook para controlar o modal Gerar Parcelas
+  const generateModal = useGenerateInstallmentsModal();
 
   const [filters, setFilters] = useState<FilterField[][]>([
     [
@@ -186,26 +191,62 @@ export default function AccountsReceivable() {
     console.log("Linhas selecionadas:", selectedRows);
   };
 
-  // Funções para controlar o modal
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
+  // Função quando clica em "Incluir" no Header
+  const handleOpenIncludeModal = () => {
+    setIsIncludeModalOpen(true);
   };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
+  // Função quando confirma dados no modal Incluir Parcela
+  const handleConfirmIncludeModal = (data: ParcelaData) => {
+    console.log("✅ Dados da parcela incluída:", data);
+
+    // Fecha o modal de Incluir
+    setIsIncludeModalOpen(false);
+
+    // Abre o modal de Gerar Parcelas com os dados preenchidos
+    generateModal.openModal({
+      empresa: data.empresa,
+      cliente: data.cliente,
+      valor: data.valorTotal,
+      tipo: "À Vista",
+      acrescimo: false,
+      desconto: false,
+      outros: false,
+      especie: "Dinheiro",
+      portador: "",
+      prazo: "30",
+    });
+
+    // Opcional: mostrar alerta
+    // alert("Parcela incluída com sucesso! Agora gere as parcelas.");
   };
 
-  const handleConfirmModal = (data: ParcelaData) => {
-    console.log("Dados da parcela a ser incluída:", data);
+  // Função quando clica em "Gerar Parcelas" diretamente (botão dentro do modal)
+  const handleOpenGenerateModalFromButton = () => {
+    setIsIncludeModalOpen(false);
+    generateModal.openModal();
+  };
+
+  // Função quando confirma as parcelas geradas
+  const handleConfirmGeneratedParcelas = (parcelas: any[]) => {
+    console.log("📦 Parcelas geradas para salvar:", parcelas);
+    console.log("💰 Total:", generateModal.calcularTotal());
+    console.log("🔢 Quantidade:", generateModal.contarParcelas());
+
     // Aqui você faria a chamada para a API
-    alert("Parcela incluída com sucesso!");
-    setIsModalOpen(false);
+    alert(
+      `${
+        parcelas.length
+      } parcelas geradas com sucesso! Total: R$ ${generateModal.calcularTotal()}`
+    );
+
+    generateModal.closeModal();
   };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-slate-950 transition-colors duration-300">
       {/* Passa a função para abrir o modal para o Header */}
-      <Header onIncluirClick={handleOpenModal} />
+      <Header onIncluirClick={handleOpenIncludeModal} />
 
       <DataFilter filters={filters} onFilterChange={setFilters} />
 
@@ -217,10 +258,22 @@ export default function AccountsReceivable() {
 
       {/* Modal de Incluir Parcela */}
       <ModalIncludeInstallment
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        onConfirm={handleConfirmModal}
+        isOpen={isIncludeModalOpen}
+        onClose={() => setIsIncludeModalOpen(false)}
+        onConfirm={handleConfirmIncludeModal}
+        onGenerateClick={handleOpenGenerateModalFromButton}
         initialData={mockParcelaData}
+      />
+
+      {/* Modal de Gerar Parcelas Avulsas */}
+      <ModalGenerateInstallments
+        isOpen={generateModal.isOpen}
+        onClose={generateModal.closeModal}
+        onConfirm={handleConfirmGeneratedParcelas}
+        onGenerateParcelas={generateModal.generateParcelas}
+        onUpdateParcelas={generateModal.updateParcelas}
+        initialData={generateModal.modalData || undefined}
+        parcelas={generateModal.parcelas}
       />
     </div>
   );

@@ -253,9 +253,9 @@ const Header: React.FC<HeaderProps> = ({
       {/* CONTAS A RECEBER Section with Orange Line */}
       <div className="bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 relative">
         {/* Linha laranja em FULL WIDTH */}
-        <div className="absolute left-0 right-0 bottom-0 h-0.5 bg-[var(--orange-primary)]"></div>
+        <div className="absolute left-0 right-0 bottom-0 h-px bg-[var(--orange-primary)]"></div>
         <div className="max-w-full mx-auto px-4 relative z-10">
-          <div className="flex items-center py-3">
+          <div className="flex items-center py-3 lg:py-[11px]">
             {/* Title */}
             <div className="flex items-center flex-1">
               <div className="header-title">

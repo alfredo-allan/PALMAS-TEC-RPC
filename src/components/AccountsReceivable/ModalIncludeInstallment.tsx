@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { X, Search, Calendar, Copy } from "lucide-react";
+import { X, SquareArrowDown, Calendar, Copy } from "lucide-react";
 import {
   CommandDialog,
   CommandInput,
@@ -18,6 +18,7 @@ interface ModalIncludeInstallmentProps {
   onClose: () => void;
   onConfirm?: (data: ParcelaData) => void;
   initialData?: ParcelaData;
+  onGenerateClick?: () => void;
 }
 
 interface ParcelaData {
@@ -81,9 +82,11 @@ const ModalIncludeInstallment: React.FC<ModalIncludeInstallmentProps> = ({
   onClose,
   onConfirm,
   initialData = mockData,
+  onGenerateClick,
 }) => {
   const [formData, setFormData] = useState<ParcelaData>(initialData);
-  const [clienteSearchOpen, setClienteSearchOpen] = useState(false);
+  const [clienteSquareArrowDownOpen, setClienteSquareArrowDownOpen] =
+    useState(false);
 
   if (!isOpen) return null;
 
@@ -96,7 +99,7 @@ const ModalIncludeInstallment: React.FC<ModalIncludeInstallmentProps> = ({
 
   const handleSelectCliente = (selectedValue: string) => {
     handleInputChange("cliente", selectedValue);
-    setClienteSearchOpen(false);
+    setClienteSquareArrowDownOpen(false);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -117,12 +120,12 @@ const ModalIncludeInstallment: React.FC<ModalIncludeInstallmentProps> = ({
 
       {/* Modal Container - Responsivo */}
       <div
-        className="relative w-full max-w-[777px] max-h-[90vh] overflow-y-auto bg-white dark:bg-slate-800 rounded-lg shadow-2xl"
+        className="relative w-full max-w-[777px] max-h-[585px] overflow-y-auto md:overflow-y-visible bg-white dark:bg-slate-800 rounded-lg shadow-2xl p-2 md:p-[8px]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Cabeçalho */}
-        <div className="w-full h-[40px] border-b border-gray-200 dark:border-slate-700 rounded-t-lg flex items-center justify-between px-4">
-          <h2 className="text-[color:var(--orange-primary)] font-bold text-lg">
+        <div className="w-full md:w-[777px] h-[40px] md:h-[29px] border-b border-gray-200 dark:border-slate-700 rounded-t-lg flex items-center justify-between px-4 text-[16px] md:text-[14px]">
+          <h2 className="text-[color:var(--orange-primary)] font-bold text-lg md:-ml-4">
             Incluir Parcela Avulsa
           </h2>
           <button
@@ -134,13 +137,19 @@ const ModalIncludeInstallment: React.FC<ModalIncludeInstallmentProps> = ({
           </button>
         </div>
 
-        <div className="p-3">
-          <form onSubmit={handleSubmit} className="h-full flex flex-col">
+        <div className="p-3 md:p-2 md:ml-[-8px]">
+          <form
+            onSubmit={handleSubmit}
+            className="h-full flex flex-col gap-px md:gap-[0px]"
+          >
             {/* LINHAS 1-4: Campos superiores - RESPONSIVO */}
-            <div className="space-y-4 md:grid md:grid-cols-2 md:gap-x-4 md:gap-y-[8px] mb-4 md:mb-[8px]">
+            <div
+              className="space-y- md:grid md:grid-cols-2 md:gap-x-4 md:gap-y-px mb-4 md:mb-px mt-0 md:mt-0
+"
+            >
               {/* Fatura */}
               <div className="md:col-span-1">
-                <label className="block text-sm font-medium text-[color:var(--orange-primary)] mb-1">
+                <label className="block text-[12px] font-medium text-[color:var(--orange-primary)] mb-1 md:mb-0 md:mt-0">
                   Fatura
                 </label>
                 <div className="relative w-[239px]">
@@ -163,26 +172,30 @@ const ModalIncludeInstallment: React.FC<ModalIncludeInstallmentProps> = ({
               <div className="hidden md:block"></div>
 
               {/* CLIENTE COM COMMAND */}
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-[color:var(--orange-primary)] mb-1">
+              <div className="md:col-span-2 md:mt-px md:mb-px">
+                <label className="block text-[12px] font-medium text-[color:var(--orange-primary)] mb-1 md:mb-0 md:mt-0">
                   Cliente
                 </label>
                 <div className="relative">
-                  {/* Input somente leitura que abre o Command */}
+                  {/* Input NORMAL - permite digitar */}
                   <input
                     type="text"
                     value={formData.cliente}
-                    readOnly
-                    onClick={() => setClienteSearchOpen(true)}
-                    className="w-full md:w-[756px] h-[28px] px-3 pr-8 text-sm border border-gray-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[color:var(--orange-primary)] focus:border-transparent cursor-pointer hover:border-[color:var(--orange-primary)]"
+                    onChange={(e) =>
+                      setFormData({ ...formData, cliente: e.target.value })
+                    } // Permite digitar
+                    className="w-full md:w-[761px] h-[28px] px-3 pr-8 text-sm border border-gray-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[color:var(--orange-primary)] focus:border-transparent cursor-text hover:border-[color:var(--orange-primary)]"
+                    placeholder="Digite ou selecione um cliente" // Placeholder opcional
                   />
-                  {/* Botão do ícone Search */}
+
+                  {/* Ícone que abre o SelectCliente - CLICA AQUI */}
                   <button
                     type="button"
-                    onClick={() => setClienteSearchOpen(true)}
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2 p-1 hover:bg-orange-50 dark:hover:bg-orange-900/10 rounded"
+                    onClick={() => setClienteSquareArrowDownOpen(true)}
+                    className="absolute right-0 top-0 h-full w-8 flex items-center justify-center hover:bg-orange-50 dark:hover:bg-orange-900/10 rounded-r"
+                    aria-label="Abrir lista de clientes"
                   >
-                    <Search
+                    <SquareArrowDown
                       size={16}
                       className="text-[color:var(--orange-primary)]"
                     />
@@ -191,8 +204,8 @@ const ModalIncludeInstallment: React.FC<ModalIncludeInstallmentProps> = ({
               </div>
 
               {/* Vendedor */}
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-[color:var(--orange-primary)] mb-1">
+              <div className="md:col-span-2 md:mt-px md:mb-px">
+                <label className="block text-[12px] font-medium text-[color:var(--orange-primary)] mb-1 md:mb-0 md:mt-0">
                   Vendedor
                 </label>
                 <div className="relative">
@@ -202,9 +215,11 @@ const ModalIncludeInstallment: React.FC<ModalIncludeInstallmentProps> = ({
                     onChange={(e) =>
                       handleInputChange("vendedor", e.target.value)
                     }
-                    className="w-full md:w-[757px] h-[28px] px-3 pr-8 text-sm border border-gray-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[color:var(--orange-primary)] focus:border-transparent"
+                    className="
+
+w-full md:w-[761px] h-[28px] px-3 pr-8 text-sm border border-gray-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[color:var(--orange-primary)] focus:border-transparent cursor-pointer hover:border-[color:var(--orange-primary)]"
                   />
-                  <Search
+                  <SquareArrowDown
                     size={16}
                     className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[color:var(--orange-primary)] pointer-events-none"
                   />
@@ -212,8 +227,8 @@ const ModalIncludeInstallment: React.FC<ModalIncludeInstallmentProps> = ({
               </div>
 
               {/* Empresa */}
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-[color:var(--orange-primary)] mb-1">
+              <div className="md:col-span-2 md:mt-px md:mb-px">
+                <label className="block text-[12px] font-medium text-[color:var(--orange-primary)] mb-1 md:mb-0 md:mt-0">
                   Empresa
                 </label>
                 <div className="relative">
@@ -223,9 +238,9 @@ const ModalIncludeInstallment: React.FC<ModalIncludeInstallmentProps> = ({
                     onChange={(e) =>
                       handleInputChange("empresa", e.target.value)
                     }
-                    className="w-full md:w-[756px] h-[28px] px-3 pr-8 text-sm border border-gray-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[color:var(--orange-primary)] focus:border-transparent"
+                    className="w-full md:w-[761px] h-[28px] px-3 pr-8 text-sm border border-gray-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[color:var(--orange-primary)] focus:border-transparent"
                   />
-                  <Search
+                  <SquareArrowDown
                     size={16}
                     className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[color:var(--orange-primary)] pointer-events-none"
                   />
@@ -236,10 +251,11 @@ const ModalIncludeInstallment: React.FC<ModalIncludeInstallmentProps> = ({
             {/* LINHAS 5-10: Grid 2 colunas - RESPONSIVO */}
             <div className="flex flex-col lg:grid lg:grid-cols-2 lg:items-start mb-4 md:mb-[8px]">
               {/* COLUNA ESQUERDA */}
-              <div className="space-y-4 md:space-y-[8px] mb-4 lg:mb-0">
+              <div className="block text-sm font-medium mb-1 mt-0 md:mt-0">
                 {/* Data da Fatura */}
                 <div>
-                  <label className="block text-sm font-medium text-[color:var(--orange-primary)] mb-1">
+                  <label className="block text-[12px] font-medium text-[color:var(--orange-primary)] mb-1 md:mb-0 md:mt-0">
+                    {" "}
                     Data da fatura
                   </label>
                   <div className="relative w-full md:w-[239px]">
@@ -260,7 +276,7 @@ const ModalIncludeInstallment: React.FC<ModalIncludeInstallmentProps> = ({
 
                 {/* VALOR TOTAL */}
                 <div>
-                  <label className="block text-sm font-medium text-[color:var(--orange-primary)] mb-1">
+                  <label className="block text-[12px] font-medium text-[color:var(--orange-primary)] mb-1 md:mb-0 md:mt-0">
                     Valor Total
                   </label>
                   <input
@@ -275,7 +291,7 @@ const ModalIncludeInstallment: React.FC<ModalIncludeInstallmentProps> = ({
 
                 {/* PEDIDO */}
                 <div>
-                  <label className="block text-sm font-medium text-[color:var(--orange-primary)] mb-1">
+                  <label className="block text-[12px] font-medium text-[color:var(--orange-primary)] mb-1 md:mb-0 md:mt-0">
                     Pedido
                   </label>
                   <input
@@ -290,7 +306,7 @@ const ModalIncludeInstallment: React.FC<ModalIncludeInstallmentProps> = ({
 
                 {/* NOTA */}
                 <div>
-                  <label className="block text-sm font-medium text-[color:var(--orange-primary)] mb-1">
+                  <label className="block text-[12px] font-medium text-[color:var(--orange-primary)] mb-1 md:mb-0 md:mt-0">
                     Nota
                   </label>
                   <input
@@ -303,7 +319,7 @@ const ModalIncludeInstallment: React.FC<ModalIncludeInstallmentProps> = ({
 
                 {/* CUPOM */}
                 <div>
-                  <label className="block text-sm font-medium text-[color:var(--orange-primary)] mb-1">
+                  <label className="block text-[12px] font-medium text-[color:var(--orange-primary)] mb-1 md:mb-0 md:mt-0">
                     Cupom
                   </label>
                   <input
@@ -316,7 +332,7 @@ const ModalIncludeInstallment: React.FC<ModalIncludeInstallmentProps> = ({
 
                 {/* O.S. */}
                 <div>
-                  <label className="block text-sm font-medium text-[color:var(--orange-primary)] mb-1">
+                  <label className="block text-[12px] font-medium text-[color:var(--orange-primary)] mb-1 md:mb-0 md:mt-0">
                     O.S.
                   </label>
                   <input
@@ -329,10 +345,11 @@ const ModalIncludeInstallment: React.FC<ModalIncludeInstallmentProps> = ({
               </div>
 
               {/* COLUNA DIREITA */}
-              <div className="flex flex-col lg:h-[221px] lg:w-[514px] lg:-ml-[134px]">
+              <div className="flex flex-col lg:h-[221px] lg:w-[514px] lg:-ml-[131px]">
                 {/* Histórico */}
-                <div className="mb-2">
-                  <label className="block text-sm font-medium text-[color:var(--orange-primary)] mb-1">
+                <div className="mt-[2px] mb-2">
+                  <label className="block text-[12px] font-medium text-[color:var(--orange-primary)] mb-1 md:mb-0 md:mt-0">
+                    {" "}
                     Histórico
                   </label>
                   <input
@@ -341,13 +358,14 @@ const ModalIncludeInstallment: React.FC<ModalIncludeInstallmentProps> = ({
                     onChange={(e) =>
                       handleInputChange("historico", e.target.value)
                     }
-                    className="w-full lg:w-[510px] h-[28px] px-3 text-sm border border-gray-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[color:var(--orange-primary)] focus:border-transparent"
+                    className="w-full lg:w-[514px] h-[28px] px-3 text-sm border border-gray-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[color:var(--orange-primary)] focus:border-transparent"
                   />
                 </div>
 
                 {/* Observação */}
-                <div className="flex-1 flex flex-col">
-                  <label className="block text-sm font-medium text-[color:var(--orange-primary)] mb-1">
+                <div className="flex-1 flex flex-col mt-[-5px]">
+                  <label className="block text-[12px] font-medium text-[color:var(--orange-primary)] mb-1 md:mb-0 md:mt-0">
+                    {" "}
                     Observação
                   </label>
                   <textarea
@@ -355,25 +373,40 @@ const ModalIncludeInstallment: React.FC<ModalIncludeInstallmentProps> = ({
                     onChange={(e) =>
                       handleInputChange("observacao", e.target.value)
                     }
-                    className="w-full lg:w-[510px] min-h-[150px] lg:h-[221px] px-3 py-2 text-sm border border-gray-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[color:var(--orange-primary)] focus:border-transparent resize-none"
+                    className="w-full lg:w-[514px] min-h-[150px] lg:h-[221px] px-3 py-2 text-sm border border-gray-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[color:var(--orange-primary)] focus:border-transparent resize-none"
                   />
                 </div>
               </div>
             </div>
 
             {/* LINHA 11: Botões */}
-            <div className="pt-2 mt-[8px] border-t border-gray-200 dark:border-slate-700">
-              <div className="flex flex-col sm:flex-row justify-end sm:space-x-3 space-y-2 sm:space-y-0">
+            <div className="pt-2 mt-[-23px] dark:border-slate-700">
+              <div className="mt-[20px] flex justify-between sm:justify-end sm:space-x-[13px]">
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-6 py-2 text-sm font-medium text-[color:var(--orange-primary)] bg-gray-100 dark:bg-slate-700 rounded hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors order-2 sm:order-1"
+                  className="w-[71px] h-[28px] text-sm font-medium text-[color:var(--orange-primary)] bg-gray-100 dark:bg-slate-700 rounded hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors order-2 sm:order-1"
                 >
                   Fechar
                 </button>
+
                 <button
-                  type="submit"
-                  className="px-6 py-2 text-sm font-medium text-white bg-[color:var(--orange-primary)] rounded hover:bg-[#d45a00] transition-colors order-1 sm:order-2"
+                  type="button"
+                  onClick={() => {
+                    // Primeiro executa onConfirm se existir (para salvar)
+                    if (onConfirm) {
+                      onConfirm(formData);
+                    }
+
+                    // Depois fecha o modal
+                    onClose();
+
+                    // Finalmente chama o outro modal
+                    if (onGenerateClick) {
+                      onGenerateClick();
+                    }
+                  }}
+                  className="w-[71px] h-[28px] text-sm font-medium text-white bg-[color:var(--orange-primary)] rounded hover:bg-[#d45a00] transition-colors order-1 sm:order-2"
                 >
                   OK
                 </button>
@@ -385,8 +418,8 @@ const ModalIncludeInstallment: React.FC<ModalIncludeInstallmentProps> = ({
 
       {/* COMMAND DIALOG PARA BUSCA DE CLIENTE - COM ESTILO PERSONALIZADO */}
       <CommandDialog
-        open={clienteSearchOpen}
-        onOpenChange={setClienteSearchOpen}
+        open={clienteSquareArrowDownOpen}
+        onOpenChange={setClienteSquareArrowDownOpen}
       >
         <CommandInput
           placeholder="Buscar cliente por nome, código ou CNPJ..."
