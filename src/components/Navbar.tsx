@@ -144,7 +144,7 @@ const NavBar: React.FC<NavBarProps> = ({
                     ${
                       isMobile
                         ? "text-white/80 hover:text-white cursor-pointer p-3 rounded-lg hover:bg-white/10 transition-colors border-l-2 border-transparent hover:border-l-4 hover:pl-4"
-                        : `text-gray-800 dark:text-gray-200 cursor-pointer p-2 rounded  transition-colors duration-200  hover:pl-3 ${getHoverColorClass(
+                        : `text-gray-800 dark:text-black cursor-pointer p-2 rounded  transition-colors duration-200  hover:pl-3 ${getHoverColorClass(
                             item.label
                           )} dark:${getHoverColorClass(item.label).replace(
                             "hover:",

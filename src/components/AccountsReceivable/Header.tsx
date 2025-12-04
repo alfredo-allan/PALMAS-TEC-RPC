@@ -428,11 +428,11 @@ const Header: React.FC<HeaderProps> = ({
                             <div
                               key={linkIndex}
                               className="
-                          text-gray-800 dark:text-gray-200
+                          text-gray-800 dark:text-black
                           cursor-pointer p-3 rounded-lg
 
                           transition-colors duration-200
-                          
+
                           hover:pl-4
                         "
                               style={{
