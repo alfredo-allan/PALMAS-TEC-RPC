@@ -20,7 +20,7 @@
 }
 
 body {
-  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  font-family: "Poppins", system-ui, -apple-system, sans-serif;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
@@ -28,6 +28,10 @@ body {
 body {
   background-color: #f9fafb;
   color: #111827;
+}
+
+.font-poppins {
+  font-family: "Poppins", sans-serif;
 }
 
 /* Dark mode */

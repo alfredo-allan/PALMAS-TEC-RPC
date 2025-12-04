@@ -1,3 +1,4 @@
+// Header.tsx - REFATORADO e PRONTO
 import React, { useState } from "react";
 import { useTheme } from "../../hooks/useTheme";
 import NavBar from "../Navbar";
@@ -16,25 +17,28 @@ import {
   Download,
   Printer,
   Send,
-  NotebookTabs,
-  Store,
-  DollarSign,
-  Building2,
-  ChartColumnIncreasing,
+  LucideIcon,
   Moon,
   Sun,
-  LucideIcon,
 } from "lucide-react";
 
 // Importe as imagens do logo
 import HsoftBlack from "../../assets/Hsoft-black.png";
 import HsoftWhite from "../../assets/Hsoft-white.png";
 
-// Interfaces para tipagem
+// Interfaces para tipagem - ATUALIZADA
 interface NavigationItem {
   icon: LucideIcon;
   label: string;
   iconColor: string;
+  href?: string;
+  columns?: {
+    title: string;
+    links: {
+      label: string;
+      href?: string;
+    }[];
+  }[];
 }
 
 interface ActionButton {
@@ -55,6 +59,14 @@ interface HeaderProps {
 
 // Mapeamento de cores para cada label
 const labelColors: Record<string, string> = {
+  Cadastros: "#CCFAE3",
+  Comercial: "#CCDAF5",
+  Financeiro: "#FAE0CC",
+  Fiscal: "#E6CCFA",
+  Relatórios: "#CCF2FA",
+};
+
+const textColors: Record<string, string> = {
   Cadastros: "#008A45",
   Comercial: "#0047CC",
   Financeiro: "#E66400",
@@ -76,33 +88,15 @@ const Header: React.FC<HeaderProps> = ({
   const [mobileMegaMenu, setMobileMegaMenu] = useState<string | null>(null);
   const [openMenu, setOpenMenu] = useState<string | null>(null);
 
-  const navigationItems: NavigationItem[] = [
-    {
-      icon: NotebookTabs,
-      label: "Cadastros",
-      iconColor: "text-emerald-600 dark:text-emerald-400",
-    },
-    {
-      icon: Store,
-      label: "Comercial",
-      iconColor: "text-blue-600 dark:text-blue-400",
-    },
-    {
-      icon: DollarSign,
-      label: "Financeiro",
-      iconColor: "text-amber-600 dark:text-amber-400",
-    },
-    {
-      icon: Building2,
-      label: "Fiscal",
-      iconColor: "text-purple-600 dark:text-purple-400",
-    },
-    {
-      icon: ChartColumnIncreasing,
-      label: "Relatórios",
-      iconColor: "text-cyan-600 dark:text-cyan-400",
-    },
-  ];
+  // ✅ USANDO O HOOK CORRETAMENTE
+  const { navigationItems } = useNavigation();
+
+  // DEBUG: Verifique os dados
+  console.log("🔍 DADOS DO HOOK:", navigationItems);
+  console.log(
+    "🔍 FINANCEIRO TEM COLUMNS?",
+    navigationItems.find((item) => item.label === "Financeiro")?.columns
+  );
 
   const actionButtons: ActionButton[] = [
     {
@@ -193,6 +187,7 @@ const Header: React.FC<HeaderProps> = ({
 
               {/* Desktop Navigation usando NavBar */}
               <div className="flex-1">
+                {/* ✅ PASSANDO OS DADOS DO HOOK PARA O NAVBAR */}
                 <NavBar
                   items={navigationItems}
                   onItemClick={(item) => handleNavClick(item.label)}
@@ -369,13 +364,19 @@ const Header: React.FC<HeaderProps> = ({
             onClick={closeAllMenus}
           />
 
-          {/* Mega Menu Container */}
+          {/* Mega Menu Container - MESMO FUNDO DO DESKTOP */}
           <div
             className="absolute top-0 left-0 right-0 h-full overflow-y-auto"
             style={{ backgroundColor: labelColors[mobileMegaMenu] }}
           >
-            {/* Header do Mega Menu Mobile */}
-            <div className="sticky top-0 flex items-center justify-between p-4 border-b border-white/20 bg-black/10 backdrop-blur-sm">
+            {/* Header do Mega Menu Mobile - COM COR DO TEXTO */}
+            <div
+              className="sticky top-0 flex items-center justify-between p-4 border-b"
+              style={{
+                borderColor: textColors[mobileMegaMenu],
+                backgroundColor: textColors[mobileMegaMenu],
+              }}
+            >
               <h2 className="text-xl font-bold text-white">{mobileMegaMenu}</h2>
               <button
                 onClick={closeAllMenus}
@@ -386,72 +387,94 @@ const Header: React.FC<HeaderProps> = ({
               </button>
             </div>
 
-            {/* Conteúdo do Mega Menu */}
+            {/* Conteúdo do Mega Menu DINÂMICO */}
             <div className="p-4">
-              <p className="text-white/90 text-lg font-medium mb-6">
-                {mobileMegaMenu} - Conteúdo do menu
-              </p>
+              {(() => {
+                const currentItem = navigationItems.find(
+                  (item) => item.label === mobileMegaMenu
+                );
 
-              {/* Exemplo de conteúdo - Cliente */}
-              <div className="mb-8">
-                <h3 className="text-white font-semibold text-base mb-3">
-                  Cliente
-                </h3>
-                <div className="space-y-2 pl-2">
-                  {["Selecione...", "Empresa", "Selecione..."].map(
-                    (item, idx) => (
-                      <div
-                        key={idx}
-                        className="text-white/80 hover:text-white hover:bg-white/10 cursor-pointer p-3 rounded-lg transition-colors"
-                      >
-                        {item}
-                      </div>
-                    )
-                  )}
-                </div>
-              </div>
-
-              {/* Exemplo de conteúdo - Vendedor */}
-              <div className="mb-8">
-                <h3 className="text-white font-semibold text-base mb-3">
-                  Vendedor
-                </h3>
-                <div className="space-y-2 pl-2">
-                  {[
-                    "Situação",
-                    "Alvarisse",
-                    "Balizaráse",
-                    "Camadaleiras",
-                    "Todos...",
-                  ].map((item, idx) => (
-                    <div
-                      key={idx}
-                      className="text-white/80 hover:text-white hover:bg-white/10 cursor-pointer p-3 rounded-lg transition-colors"
-                    >
-                      {item}
+                if (!currentItem?.columns) {
+                  return (
+                    <div className="text-center py-8">
+                      <p className="text-gray-600 dark:text-gray-300">
+                        Menu {mobileMegaMenu} em desenvolvimento
+                      </p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                        Conteúdo será adicionado em breve
+                      </p>
                     </div>
-                  ))}
-                </div>
-              </div>
+                  );
+                }
 
-              {/* Mais seções conforme necessário */}
-              <div className="mb-8">
-                <h3 className="text-white font-semibold text-base mb-3">
-                  Configurações
-                </h3>
-                <div className="space-y-2 pl-2">
-                  {["Preferências", "Relatórios", "Exportar", "Ajuda"].map(
-                    (item, idx) => (
-                      <div
-                        key={idx}
-                        className="text-white/80 hover:text-white hover:bg-white/10 cursor-pointer p-3 rounded-lg transition-colors"
-                      >
-                        {item}
+                return (
+                  <div className="space-y-8">
+                    {currentItem.columns.map((col, index) => (
+                      <div key={index} className="space-y-3">
+                        {/* Título da coluna - COR DO TEXTO IGUAL DESKTOP */}
+                        <h3
+                          className="font-semibold text-lg pb-2 border-b"
+                          style={{
+                            color: textColors[mobileMegaMenu],
+                            borderColor: textColors[mobileMegaMenu],
+                          }}
+                        >
+                          {col.title}
+                        </h3>
+
+                        {/* Links da coluna - COR DO HOVER IGUAL DESKTOP */}
+                        <div className="space-y-2">
+                          {col.links.map((link, linkIndex) => (
+                            <div
+                              key={linkIndex}
+                              className="
+                          text-gray-800 dark:text-gray-200
+                          cursor-pointer p-3 rounded-lg
+
+                          transition-colors duration-200
+                          
+                          hover:pl-4
+                        "
+                              style={{
+                                borderColor: textColors[mobileMegaMenu],
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.color =
+                                  textColors[mobileMegaMenu];
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.color = "";
+                              }}
+                              onClick={() => {
+                                console.log(`Mobile: Clicou em ${link.label}`);
+                                closeAllMenus();
+                              }}
+                            >
+                              {link.label}
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                    )
-                  )}
-                </div>
-              </div>
+                    ))}
+
+                    {/* Botão de ação - COM COR DO TEXTO */}
+                    <div
+                      className="pt-6 border-t"
+                      style={{ borderColor: textColors[mobileMegaMenu] + "40" }}
+                    >
+                      <button
+                        className="w-full py-3 rounded-lg font-medium text-white text-center transition-colors hover:opacity-90"
+                        style={{
+                          backgroundColor: textColors[mobileMegaMenu],
+                        }}
+                        onClick={closeAllMenus}
+                      >
+                        Fechar Menu
+                      </button>
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
           </div>
         </div>
