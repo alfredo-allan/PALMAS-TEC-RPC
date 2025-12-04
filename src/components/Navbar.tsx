@@ -13,11 +13,11 @@ const NavBar: React.FC<NavBarProps> = ({ items, onItemClick }) => {
 
   // Mapeamento de cores
   const labelColors: Record<string, string> = {
-    Cadastros: "#008A45",
-    Comercial: "#0047CC",
-    Financeiro: "#E66400",
-    Fiscal: "#8300E6",
-    Relatórios: "#0096B8",
+    Cadastros: "#CCFAE3",
+    Comercial: "#CCDAF5",
+    Financeiro: "#FAE0CC",
+    Fiscal: "#E6CCFA",
+    Relatórios: "#CCF2FA",
   };
 
   const handleNavClick = (label: string) => {
