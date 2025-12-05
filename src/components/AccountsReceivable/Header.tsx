@@ -278,15 +278,15 @@ const Header: React.FC<HeaderProps> = ({
               <div
                 className="
   header-title
-  md:h-[52px] md:w-[150px]
-  md:flex md:items-center md:justify-center  {/* Centraliza conteúdo */}
+  md:h-[51px] md:w-[150px]
+  md:flex md:items-center
+   lg:h-[49px]
 "
               >
                 <h1
                   className="
     text-white text-lg font-bold tracking-wide
-    style=position: relative;left: 0;
-  "
+    style={{ position: 'relative', left: 0 }}  "
                 >
                   CONTAS A RECEBER
                 </h1>
