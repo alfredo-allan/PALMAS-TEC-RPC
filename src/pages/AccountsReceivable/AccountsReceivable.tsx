@@ -299,8 +299,8 @@ export default function AccountsReceivable() {
 
   // Funções para as ações da tabela (TableActionsHover)
   const handleViewRow = (rowData: TableRow) => {
-    console.log("📋 Visualizando linha:", rowData);
-    alert(`Visualizando: ${rowData.cliente}\nValor: ${rowData.valor}`);
+    // console.log("📋 Visualizando linha:", rowData);
+    // alert(`Visualizando: ${rowData.cliente}\nValor: ${rowData.valor}`);
   };
 
   const handleCopyRow = (rowData: TableRow) => {
@@ -329,35 +329,27 @@ export default function AccountsReceivable() {
       {/* Main content com wrapper simples */}
       <main className="max-w-full mx-auto">
         <div className="space-y-0">
-          {/* Envolva a tabela em um container relativo */}
+          {/* O container 'relative' deve envolver a tabela para que o posicionamento
+              'absolute' interno (do TableActionsHover, agora dentro do DataTable) funcione corretamente. */}
           <div className="relative">
             <DataTable
               data={tableData}
               onRowSelect={handleRowSelect}
-              // Se o DataTable tiver prop para custom render, use:
-              // renderRowActions={renderRowActions}
+              // === PASSANDO OS HANDLERS DE AÇÃO REAIS PARA O DataTable ===
+              onRowView={handleViewRow}
+              onRowCopy={handleCopyRow}
+              onRowSend={handleSendRow}
+              onRowPrint={handlePrintRow}
+              // ========================================================
             />
 
-            {/* Hover actions flutuante simples */}
-            {tableData.map(
-              (row) =>
-                hoveredRowId === row.id && (
-                  <div
-                    key={`hover-${row.id}`}
-                    className="absolute left-1/2 transform -translate-x-1/2 z-50"
-                    style={{
-                      top: `${40 + parseInt(row.id) * 48}px`, // Ajuste a posição Y
-                    }}
-                  >
-                    <TableActionsHover
-                      rowData={row}
-                      onView={() => handleViewRow(row)}
-                      onCopy={() => handleCopyRow(row)}
-                      onSend={() => handleSendRow(row)}
-                    />
-                  </div>
-                )
-            )}
+            {/* O BLOCO DE HOVER ACTIONS FLUTUANTE SIMPLES ANTIGO FOI REMOVIDO!
+              (Anteriormente, ele estava mapeando 'tableData.map(...)')
+
+              O controle de estado e a renderização do TableActionsHover
+              agora são tratados EXCLUSIVAMENTE dentro do componente DataTable,
+              que usa posição 'absolute' para fixar o menu à linha correta.
+            */}
           </div>
         </div>
       </main>

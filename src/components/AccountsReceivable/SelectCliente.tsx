@@ -88,7 +88,7 @@ export default function SelectCliente({
         <div
           className="
     w-full              /* mobile/tablet */
-    lg:w-[630px]        /* desktop */
+    lg:w-[730px]        /* desktop */
     h-[28px]
     flex items-center
     border border-gray-300 dark:border-gray-600

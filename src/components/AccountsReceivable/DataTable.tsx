@@ -11,7 +11,7 @@ import ViewInstallmentModal from "../ViewInstallmentModal/ViewInstallmentModal";
 // ^^^ CERTIFIQUE-SE DE AJUSTAR ESTE CAMINHO DE IMPORTAÇÃO ^^^
 
 // ===============================================
-// 1. DEFINIÇÕES DE INTERFACE (MOVEMOS TUDO PARA O TOPO)
+// 1. DEFINIÇÕES DE INTERFACE
 // ===============================================
 
 export interface TableRow {
@@ -95,7 +95,7 @@ const DataTable: React.FC<DataTableProps> = ({
   const [modalRowData, setModalRowData] = useState<TableRow | null>(null);
 
   // ===============================================
-  // 3. FUNÇÕES DE AÇÃO E CONTROLE (TIPAGEM CORRIGIDA)
+  // 3. FUNÇÕES DE AÇÃO E CONTROLE
   // ===============================================
 
   const handleCloseActions = () => {
@@ -108,45 +108,33 @@ const DataTable: React.FC<DataTableProps> = ({
     setModalRowData(null);
   };
 
-  // FUNÇÃO PRINCIPAL: on View (Abre Modal)
   const handleViewDetails = (row: TableRow) => {
-    // TIPO EXPLÍCITO APLICADO AQUI
     setModalRowData(row);
     setIsModalOpen(true);
     handleCloseActions();
     onRowView?.(row);
   };
 
-  // FUNÇÃO: on Copy
   const handleCopyAction = (row: TableRow) => {
-    // TIPO EXPLÍCITO APLICADO AQUI
     onRowCopy?.(row);
     handleCloseActions();
   };
 
-  // FUNÇÃO: on Send
   const handleSendAction = (row: TableRow) => {
-    // TIPO EXPLÍCITO APLICADO AQUI
     onRowSend?.(row);
     handleCloseActions();
   };
 
-  // FUNÇÃO: on Print
   const handlePrintAction = (row: TableRow) => {
-    // TIPO EXPLÍCITO APLICADO AQUI
     onRowPrint?.(row);
     handleCloseActions();
   };
 
-  // ... (Outras funções de controle como handleClickRow, handleMouseEnterRow, etc.) ...
-
   const handleClickRow = (rowId: string, event: React.MouseEvent) => {
     const target = event.target as HTMLElement;
-    // CORREÇÃO DO ERRO DE TIPAGEM 'type'
     if (target instanceof HTMLInputElement && target.type === "checkbox") {
       return;
     }
-    // Lógica de toggle
     if (clickedRowId === rowId) {
       setClickedRowId(null);
     } else {
@@ -206,21 +194,57 @@ const DataTable: React.FC<DataTableProps> = ({
     }, 200);
   };
 
+  // FUNÇÃO DE CÁLCULO PARA POSIÇÃO FIXA NO VIEWPORT
   const updateHoverPosition = (rowId: string) => {
     const rowElement = rowRefs.current.get(rowId);
+
     if (rowElement) {
-      const rect = rowElement.getBoundingClientRect();
-      const scrollTop =
-        window.pageYOffset || document.documentElement.scrollTop;
+      const rowRect = rowElement.getBoundingClientRect();
+
+      // Cálculo Y: Usa rowRect.top (posição da linha no viewport)
+      const fixedTopY = rowRect.top + rowRect.height / 2 - 16;
+
+      // Cálculo X: Posição horizontal no viewport
+      const fixedLeftX = rowRect.right - 250;
 
       setHoverPosition({
-        x: rect.right - 250,
-        y: rect.top + scrollTop + rect.height / 2 - 16,
+        x: fixedLeftX,
+        y: fixedTopY,
       });
     }
   };
 
+  // FUNÇÃO DE SCROLL E VERIFICAÇÃO DE VISIBILIDADE
+  const handleScrollAndVisibilityCheck = () => {
+    const currentActiveRowId = hoveredRowId || clickedRowId;
+    if (!currentActiveRowId) return;
+
+    const rowElement = rowRefs.current.get(currentActiveRowId);
+
+    if (rowElement) {
+      const rowRect = rowElement.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+
+      // 1. Verificar se a linha está visível no viewport
+      // Considera visível se a linha estiver entre o topo (0) e a base (viewportHeight)
+      const isVisible = rowRect.bottom > 0 && rowRect.top < viewportHeight;
+
+      if (!isVisible) {
+        // Linha não visível: Fechar o menu flutuante (Comportamento Requerido)
+        handleCloseActions();
+        return;
+      }
+
+      // 2. Linha visível: Atualizar a posição FIXA
+      updateHoverPosition(currentActiveRowId);
+    } else {
+      // Se a ref da linha for perdida, fecha
+      handleCloseActions();
+    }
+  };
+
   const handleMouseMoveRow = (rowId: string) => {
+    // É importante recalcular a posição no mouse move para scroll horizontal
     if (hoveredRowId === rowId && !clickedRowId) {
       updateHoverPosition(rowId);
     }
@@ -236,6 +260,22 @@ const DataTable: React.FC<DataTableProps> = ({
       }
     });
   }, [data]);
+
+  // [NOVO HOOK] Adiciona listener para scroll e redimensionamento
+  useEffect(() => {
+    const activeId = hoveredRowId || clickedRowId;
+
+    // Adiciona listener para scroll da janela principal
+    window.addEventListener("scroll", handleScrollAndVisibilityCheck);
+    // Adiciona listener para redimensionamento
+    window.addEventListener("resize", handleScrollAndVisibilityCheck);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener("scroll", handleScrollAndVisibilityCheck);
+      window.removeEventListener("resize", handleScrollAndVisibilityCheck);
+    };
+  }, [hoveredRowId, clickedRowId]); // Monitora a linha ativa para configurar o listener
 
   // Limpa timeouts ao desmontar
   useEffect(() => {
@@ -315,7 +355,7 @@ const DataTable: React.FC<DataTableProps> = ({
     <div className="bg-white dark:bg-slate-900 w-full border-gray-300 dark:border-slate-700 font-medium relative">
       <div className="overflow-x-auto w-full">
         <table className="w-full min-w-[1200px]" ref={tableRef}>
-          {/* ... (Header, Totais, e Thead mantidos) ... */}
+          {/* ... (Conteúdo do thead) ... */}
           <thead>
             {/* Primeira linha - Ícones */}
             <tr className="border-b border-gray-300 dark:border-slate-600 bg-gray-50 dark:bg-slate-800">
@@ -443,6 +483,7 @@ const DataTable: React.FC<DataTableProps> = ({
       {activeRow && (
         <div
           ref={actionsRef}
+          // CLASSE CORRIGIDA: fixed (para ignorar scroll da página)
           className={`fixed z-50 transition-all duration-200 ${
             clickedRowId ? "shadow-2xl" : ""
           }`}
@@ -454,8 +495,6 @@ const DataTable: React.FC<DataTableProps> = ({
           onMouseEnter={handleMouseEnterActions}
           onMouseLeave={handleMouseLeaveActions}
         >
-          {/* O ELEMENTO [X] DE FECHAR MOBILE FOI REMOVIDO DAQUI */}
-
           <TableActionsHover
             rowData={activeRow}
             rowStatus={activeRow.status}
@@ -475,9 +514,8 @@ const DataTable: React.FC<DataTableProps> = ({
           isOpen={isModalOpen}
           onClose={handleCloseModal}
           title={`Visualizar Parcela`}
-          // === FUNCIONALIDADE CORRIGIDA: PASSANDO OS DADOS REAIS ===
+          // === PASSANDO OS DADOS REAIS ===
           rowData={modalRowData}
-          // =========================================================
         >
           {/* Conteúdo detalhado da Parcela (Mantido no body do modal) */}
           <div className="text-sm dark:text-white">
