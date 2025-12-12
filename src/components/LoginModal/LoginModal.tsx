@@ -1,6 +1,8 @@
 // components/LoginModal.tsx
 import React, { useState } from "react";
 import { X, Lock, User } from "lucide-react";
+import HsoftBlack from "../../assets/Hsoft-black.png";
+import HsoftWhite from "../../assets/Hsoft-white.png";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -75,12 +77,23 @@ const LoginModal: React.FC<LoginModalProps> = ({
                 max-sm:gap-4 max-sm:px-0 max-sm:ml-0 max-sm:mt-2 md:ml-[100px]"
           >
             {/* Imagem à esquerda do campo */}
+            {/* Imagem à esquerda do campo com suporte Dark/Light */}
             <div className="pt-6">
-              <img
-                src="src/assets/LogoModalHsoft.png"
-                alt="Hsoft Logo"
-                className="flex justify-left w-[102px] h-[35px] relative left-[-113px] top-[96px] max-md:hidden"
-              />
+              {/* Contêiner para as duas imagens. Manterá as classes de posicionamento originais. */}
+              <div className="flex justify-left w-[102px] h-[35px] relative left-[-113px] top-[96px] max-md:hidden">
+                {/* Imagem para o tema CLARO: visível por padrão (block) e oculta no modo dark (dark:hidden) */}
+                <img
+                  src={HsoftBlack}
+                  alt="Hsoft Logo"
+                  className="block dark:hidden w-full h-full object-contain"
+                />
+                {/* Imagem para o tema ESCURO: oculta por padrão (hidden) e visível no modo dark (dark:block) */}
+                <img
+                  src={HsoftWhite}
+                  alt="Hsoft Logo"
+                  className="hidden dark:block w-full h-full object-contain"
+                />
+              </div>
             </div>
             {/* Campo Usuário - 387x28 */}
             <div>

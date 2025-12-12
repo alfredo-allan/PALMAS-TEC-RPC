@@ -7,6 +7,12 @@ import {
   DollarSign,
 } from "lucide-react";
 import TableActionsHover from "../TableActionsHover/TableActionsHover";
+import ViewInstallmentModal from "../ViewInstallmentModal/ViewInstallmentModal";
+// ^^^ CERTIFIQUE-SE DE AJUSTAR ESTE CAMINHO DE IMPORTAÇÃO ^^^
+
+// ===============================================
+// 1. DEFINIÇÕES DE INTERFACE (MOVEMOS TUDO PARA O TOPO)
+// ===============================================
 
 export interface TableRow {
   id: string;
@@ -63,6 +69,10 @@ const TotalCard: React.FC<{
   </div>
 );
 
+// ===============================================
+// 2. COMPONENTE PRINCIPAL
+// ===============================================
+
 const DataTable: React.FC<DataTableProps> = ({
   data,
   onRowSelect,
@@ -71,6 +81,7 @@ const DataTable: React.FC<DataTableProps> = ({
   onRowSend,
   onRowPrint,
 }) => {
+  // ... (Estados existentes) ...
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [hoveredRowId, setHoveredRowId] = useState<string | null>(null);
   const [hoverPosition, setHoverPosition] = useState({ x: 0, y: 0 });
@@ -79,6 +90,91 @@ const DataTable: React.FC<DataTableProps> = ({
   const tableRef = useRef<HTMLTableElement>(null);
   const rowRefs = useRef<Map<string, HTMLTableRowElement>>(new Map());
   const actionsRef = useRef<HTMLDivElement>(null);
+  const [clickedRowId, setClickedRowId] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalRowData, setModalRowData] = useState<TableRow | null>(null);
+
+  // ===============================================
+  // 3. FUNÇÕES DE AÇÃO E CONTROLE (TIPAGEM CORRIGIDA)
+  // ===============================================
+
+  const handleCloseActions = () => {
+    setClickedRowId(null);
+    setHoveredRowId(null);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setModalRowData(null);
+  };
+
+  // FUNÇÃO PRINCIPAL: on View (Abre Modal)
+  const handleViewDetails = (row: TableRow) => {
+    // TIPO EXPLÍCITO APLICADO AQUI
+    setModalRowData(row);
+    setIsModalOpen(true);
+    handleCloseActions();
+    onRowView?.(row);
+  };
+
+  // FUNÇÃO: on Copy
+  const handleCopyAction = (row: TableRow) => {
+    // TIPO EXPLÍCITO APLICADO AQUI
+    onRowCopy?.(row);
+    handleCloseActions();
+  };
+
+  // FUNÇÃO: on Send
+  const handleSendAction = (row: TableRow) => {
+    // TIPO EXPLÍCITO APLICADO AQUI
+    onRowSend?.(row);
+    handleCloseActions();
+  };
+
+  // FUNÇÃO: on Print
+  const handlePrintAction = (row: TableRow) => {
+    // TIPO EXPLÍCITO APLICADO AQUI
+    onRowPrint?.(row);
+    handleCloseActions();
+  };
+
+  // ... (Outras funções de controle como handleClickRow, handleMouseEnterRow, etc.) ...
+
+  const handleClickRow = (rowId: string, event: React.MouseEvent) => {
+    const target = event.target as HTMLElement;
+    // CORREÇÃO DO ERRO DE TIPAGEM 'type'
+    if (target instanceof HTMLInputElement && target.type === "checkbox") {
+      return;
+    }
+    // Lógica de toggle
+    if (clickedRowId === rowId) {
+      setClickedRowId(null);
+    } else {
+      setClickedRowId(rowId);
+      setHoveredRowId(null);
+      updateHoverPosition(rowId);
+    }
+  };
+
+  const handleMouseEnterRow = (rowId: string, event: React.MouseEvent) => {
+    if (clickedRowId) return;
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+    }
+    setHoveredRowId(rowId);
+    updateHoverPosition(rowId);
+  };
+
+  const handleMouseLeaveRow = () => {
+    if (clickedRowId) return;
+    if (!isActionsHovered) {
+      hoverTimeoutRef.current = setTimeout(() => {
+        if (!isActionsHovered) {
+          setHoveredRowId(null);
+        }
+      }, 300);
+    }
+  };
 
   const handleRowSelect = (rowId: string) => {
     const newSelectedRows = selectedRows.includes(rowId)
@@ -94,27 +190,6 @@ const DataTable: React.FC<DataTableProps> = ({
     const newSelectedRows = selectedRows.length === data.length ? [] : allIds;
     setSelectedRows(newSelectedRows);
     onRowSelect?.(newSelectedRows);
-  };
-
-  const handleMouseEnterRow = (rowId: string, event: React.MouseEvent) => {
-    // Limpa qualquer timeout anterior
-    if (hoverTimeoutRef.current) {
-      clearTimeout(hoverTimeoutRef.current);
-    }
-
-    setHoveredRowId(rowId);
-    updateHoverPosition(rowId);
-  };
-
-  const handleMouseLeaveRow = () => {
-    // Só esconde se não estiver hover no actions
-    if (!isActionsHovered) {
-      hoverTimeoutRef.current = setTimeout(() => {
-        if (!isActionsHovered) {
-          setHoveredRowId(null);
-        }
-      }, 300); // Delay de 300ms para dar tempo de mover para o actions
-    }
   };
 
   const handleMouseEnterActions = () => {
@@ -138,16 +213,15 @@ const DataTable: React.FC<DataTableProps> = ({
       const scrollTop =
         window.pageYOffset || document.documentElement.scrollTop;
 
-      // Posiciona no final da linha, mas com uma área maior de hover
       setHoverPosition({
-        x: rect.right - 250, // 250px da direita
-        y: rect.top + scrollTop + rect.height / 2 - 16, // Centralizado
+        x: rect.right - 250,
+        y: rect.top + scrollTop + rect.height / 2 - 16,
       });
     }
   };
 
   const handleMouseMoveRow = (rowId: string) => {
-    if (hoveredRowId === rowId) {
+    if (hoveredRowId === rowId && !clickedRowId) {
       updateHoverPosition(rowId);
     }
   };
@@ -171,6 +245,11 @@ const DataTable: React.FC<DataTableProps> = ({
       }
     };
   }, []);
+
+  const activeRowId = clickedRowId || hoveredRowId;
+  const activeRow = activeRowId
+    ? data.find((row) => row.id === activeRowId)
+    : null;
 
   // Header com totais - ÍCONES COM CORES ESPECÍFICAS
   const totals = {
@@ -232,16 +311,11 @@ const DataTable: React.FC<DataTableProps> = ({
     },
   ];
 
-  // Encontra a linha atual pelo hover
-  const hoveredRow = hoveredRowId
-    ? data.find((row) => row.id === hoveredRowId)
-    : null;
-
   return (
     <div className="bg-white dark:bg-slate-900 w-full border-gray-300 dark:border-slate-700 font-medium relative">
       <div className="overflow-x-auto w-full">
         <table className="w-full min-w-[1200px]" ref={tableRef}>
-          {/* HEADER COM ÍCONES */}
+          {/* ... (Header, Totais, e Thead mantidos) ... */}
           <thead>
             {/* Primeira linha - Ícones */}
             <tr className="border-b border-gray-300 dark:border-slate-600 bg-gray-50 dark:bg-slate-800">
@@ -321,11 +395,15 @@ const DataTable: React.FC<DataTableProps> = ({
     ${row.status === "baixada" ? "text-[#008A45] hover:text-[#008A45]" : ""}
     ${row.status === "cancelada" ? "text-[#0047CC] hover:text-[#0047CC]" : ""}
     ${selectedRows.includes(row.id) ? "bg-orange-50 dark:bg-orange-900/20" : ""}
-    group
+    ${clickedRowId === row.id ? "bg-orange-50 dark:bg-orange-900/20" : ""}
+    group cursor-pointer
   `}
+                // Desktop Hover
                 onMouseEnter={(e) => handleMouseEnterRow(row.id, e)}
                 onMouseLeave={handleMouseLeaveRow}
                 onMouseMove={() => handleMouseMoveRow(row.id)}
+                // Mobile/Tablet Click
+                onClick={(e) => handleClickRow(row.id, e)}
               >
                 {/* Checkbox */}
                 <td className="px-1 py-1 border-r border-gray-300 dark:border-slate-600">
@@ -362,26 +440,69 @@ const DataTable: React.FC<DataTableProps> = ({
       </div>
 
       {/* TableActionsHover flutuante com área de hover estendida */}
-      {hoveredRow && (
+      {activeRow && (
         <div
           ref={actionsRef}
-          className="fixed z-50 transition-all duration-200"
+          className={`fixed z-50 transition-all duration-200 ${
+            clickedRowId ? "shadow-2xl" : ""
+          }`}
           style={{
             left: `${hoverPosition.x}px`,
             top: `${hoverPosition.y}px`,
           }}
+          // Desktop Hover Controls
           onMouseEnter={handleMouseEnterActions}
           onMouseLeave={handleMouseLeaveActions}
         >
+          {/* [ELEMENTO NOVO] Botão de fechar para Mobile (Só visível no modo clique) */}
+          {clickedRowId && (
+            <button
+              onClick={handleCloseActions}
+              className="absolute -top-6 right-0 text-white bg-red-500 rounded-full w-6 h-6 flex items-center justify-center text-xs shadow-lg md:hidden"
+              aria-label="Fechar Ações"
+            >
+              X
+            </button>
+          )}
+
           <TableActionsHover
-            rowData={hoveredRow}
-            rowStatus={hoveredRow.status} // ← AQUI! PASSA O STATUS DA LINHA
-            onView={() => onRowView?.(hoveredRow)}
-            onCopy={() => onRowCopy?.(hoveredRow)}
-            onSend={() => onRowSend?.(hoveredRow)}
-            onPrint={() => onRowPrint?.(hoveredRow)}
+            rowData={activeRow}
+            rowStatus={activeRow.status}
+            // 1. AÇÃO PRINCIPAL: Visualizar (Abre Modal)
+            onView={() => handleViewDetails(activeRow)}
+            // 2. AÇÕES SECUNDÁRIAS: Chamam as novas funções de ação
+            onCopy={() => handleCopyAction(activeRow)}
+            onSend={() => handleSendAction(activeRow)}
+            onPrint={() => handlePrintAction(activeRow)}
           />
         </div>
+      )}
+
+      {/* 3. Renderização do Modal de Visualização (onView) */}
+      {/* 3. Renderização do Modal de Visualização (onView) */}
+      {modalRowData && (
+        <ViewInstallmentModal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          // title={`Visualizar Parcela ID: ${modalRowData.id}`}
+          title={`Visualizar Parcela`}
+          // === FUNCIONALIDADE ADICIONADA: PASSANDO OS DADOS REAIS ===
+          rowData={modalRowData}
+          // =========================================================
+        >
+          {/* Conteúdo detalhado da Parcela (Mantido no body do modal) */}
+          <div className="text-sm dark:text-white">
+            <h4 className="text-lg font-bold mb-3">Dados da Linha:</h4>
+            <pre className="bg-gray-100 dark:bg-slate-700 p-4 rounded-md overflow-x-auto text-xs">
+              {/* O modal agora usa o JSON real no seu interior */}
+              {JSON.stringify(modalRowData, null, 2)}
+            </pre>
+            <p className="mt-4 text-gray-600 dark:text-gray-400">
+              *Este é o conteúdo principal que será substituído pelo layout
+              final do Figma.
+            </p>
+          </div>
+        </ViewInstallmentModal>
       )}
     </div>
   );
