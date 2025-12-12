@@ -454,16 +454,7 @@ const DataTable: React.FC<DataTableProps> = ({
           onMouseEnter={handleMouseEnterActions}
           onMouseLeave={handleMouseLeaveActions}
         >
-          {/* [ELEMENTO NOVO] Botão de fechar para Mobile (Só visível no modo clique) */}
-          {clickedRowId && (
-            <button
-              onClick={handleCloseActions}
-              className="absolute -top-6 right-0 text-white bg-red-500 rounded-full w-6 h-6 flex items-center justify-center text-xs shadow-lg md:hidden"
-              aria-label="Fechar Ações"
-            >
-              X
-            </button>
-          )}
+          {/* O ELEMENTO [X] DE FECHAR MOBILE FOI REMOVIDO DAQUI */}
 
           <TableActionsHover
             rowData={activeRow}
@@ -479,14 +470,12 @@ const DataTable: React.FC<DataTableProps> = ({
       )}
 
       {/* 3. Renderização do Modal de Visualização (onView) */}
-      {/* 3. Renderização do Modal de Visualização (onView) */}
       {modalRowData && (
         <ViewInstallmentModal
           isOpen={isModalOpen}
           onClose={handleCloseModal}
-          // title={`Visualizar Parcela ID: ${modalRowData.id}`}
           title={`Visualizar Parcela`}
-          // === FUNCIONALIDADE ADICIONADA: PASSANDO OS DADOS REAIS ===
+          // === FUNCIONALIDADE CORRIGIDA: PASSANDO OS DADOS REAIS ===
           rowData={modalRowData}
           // =========================================================
         >
