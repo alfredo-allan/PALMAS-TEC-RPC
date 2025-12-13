@@ -11,6 +11,7 @@
 :root {
   --orange-primary: #e66400;
   --orange-primary-dark: rgba(230, 100, 0, 0.5);
+  --mouse-over: #fdefe5;
 }
 
 * {

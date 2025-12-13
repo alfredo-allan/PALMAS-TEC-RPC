@@ -43,6 +43,9 @@ const mockParcelaData: ParcelaData = {
 };
 
 // Dados mock para tabela
+// NO ARQUIVO AccountsReceivable.tsx
+
+// Dados mock para tabela
 const mockAbertas: TableRow[] = [
   {
     id: "1",
@@ -57,6 +60,15 @@ const mockAbertas: TableRow[] = [
     multa: "R$ 11,95",
     juros: "R$ 4,78",
     valorTotal: "R$ 522,10",
+
+    // === NOVOS DADOS SIMULADOS PARA O MODAL ===
+    vendedor: "12 - ICARO A. PEREIRA",
+    caixa: "172 - Larissa C. Lopes",
+    dataOrcamento: "05/10/2022",
+    condicao: "30/60/90/120",
+    dataVenda: "08/10/2022",
+    totalVenda: "R$ 6.957,22",
+    // ==========================================
   },
   {
     id: "3",
@@ -71,8 +83,19 @@ const mockAbertas: TableRow[] = [
     multa: "R$ 75,00",
     juros: "R$ 30,00",
     valorTotal: "R$ 1.650,00",
+
+    // === NOVOS DADOS SIMULADOS PARA O MODAL ===
+    vendedor: "12 - ICARO A. PEREIRA",
+    caixa: "172 - Larissa C. Lopes",
+    dataOrcamento: "01/01/2020",
+    condicao: "À Vista",
+    dataVenda: "01/01/2020",
+    totalVenda: "R$ 1.650,00",
+    // ==========================================
   },
 ];
+
+// NO ARQUIVO AccountsReceivable.tsx
 
 const mockBaixadas: TableRow[] = [
   {
@@ -89,6 +112,14 @@ const mockBaixadas: TableRow[] = [
     juros: "R$ 0,00",
     valorTotal: "R$ 820,00",
     status: "baixada",
+    // === DADOS NOVOS ===
+    vendedor: "134 - Rodrigo dos Santos Melo Ribeiro",
+    caixa: "172 - Laryssa Carvalho Lopes",
+    dataOrcamento: "05/10/2022",
+    condicao: "30/60/90",
+    dataVenda: "08/10/2022",
+    totalVenda: "R$ 6.957,22",
+    // ==================
   },
   {
     id: "11",
@@ -104,6 +135,14 @@ const mockBaixadas: TableRow[] = [
     juros: "0,00",
     valorTotal: "R$ 452,00",
     status: "baixada",
+    // === DADOS NOVOS ===
+    vendedor: "134 - Rodrigo dos Santos Melo Ribeiro",
+    caixa: "172 - Laryssa Carvalho Lopes",
+    dataOrcamento: "05/10/2022",
+    condicao: "30/60/90",
+    dataVenda: "08/10/2022",
+    totalVenda: "R$ 6.957,22",
+    // ==================
   },
 ];
 
@@ -122,6 +161,14 @@ const mockCanceladas: TableRow[] = [
     juros: "—",
     valorTotal: "R$ 199,00",
     status: "cancelada",
+    // === DADOS NOVOS ===
+    vendedor: "134 - Rodrigo dos Santos Melo Ribeiro",
+    caixa: "172 - Laryssa Carvalho Lopes",
+    dataOrcamento: "05/10/2022",
+    condicao: "30/60/90",
+    dataVenda: "08/10/2022",
+    totalVenda: "R$ 6.957,22",
+    // ==================
   },
 ];
 

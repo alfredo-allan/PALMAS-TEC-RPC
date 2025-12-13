@@ -28,6 +28,12 @@ export interface TableRow {
   multa: string;
   juros: string;
   valorTotal: string;
+  vendedor: string;
+  caixa: string;
+  dataOrcamento: string;
+  condicao: string;
+  dataVenda: string;
+  totalVenda: string;
   status?: "aberta" | "baixada" | "cancelada";
 }
 
@@ -518,17 +524,17 @@ const DataTable: React.FC<DataTableProps> = ({
           rowData={modalRowData}
         >
           {/* Conteúdo detalhado da Parcela (Mantido no body do modal) */}
-          <div className="text-sm dark:text-white">
+         {/*  <div className="text-sm dark:text-white">
             <h4 className="text-lg font-bold mb-3">Dados da Linha:</h4>
             <pre className="bg-gray-100 dark:bg-slate-700 p-4 rounded-md overflow-x-auto text-xs">
-              {/* O modal agora usa o JSON real no seu interior */}
               {JSON.stringify(modalRowData, null, 2)}
+             O modal agora usa o JSON real no seu interior
             </pre>
             <p className="mt-4 text-gray-600 dark:text-gray-400">
               *Este é o conteúdo principal que será substituído pelo layout
               final do Figma.
             </p>
-          </div>
+          </div> */}
         </ViewInstallmentModal>
       )}
     </div>
