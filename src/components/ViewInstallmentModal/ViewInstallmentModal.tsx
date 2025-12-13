@@ -298,13 +298,13 @@ const ViewInstallmentModal: React.FC<ViewInstallmentModalProps> = ({
           {/* === FIM 3a (CONTEÚDO FIXO) === */}
 
           {/* === 3b: TABELA QUE DEVE ROLAR (Recebe flex-1 para ocupar o espaço restante) === */}
-          <div className="flex-1 overflow-y-auto overflow-x-hidden">
+          <div className="flex-1 overflow-y-auto overflow-x-hidden text-[12px]">
             {/* CONTAINER DA TABELA (Mantido W-FULL) */}
             {/* O overflow-x-auto é movido para este container para permitir a rolagem horizontal interna da tabela */}
             <div className="overflow-x-auto w-full border-t border-b border-gray-300 dark:border-slate-700">
-              <table className="min-w-[1200px] w-full">
+              <table className="min-w-[1200px] w-full text-[12px]">
                 <thead>
-                  <tr className="h-[32px] bg-gray-100 dark:bg-slate-700 text-xs font-bold text-gray-700 dark:text-gray-300">
+                  <tr className="h-[24px] bg-[var(--orange-primary)]  dark:bg[var(--orange-primary)] text-xs font-bold text-white dark:text-gray-300 text-[12px]">
                     {detalheColumnLabels.map((label, index) => (
                       <th
                         key={index}
@@ -369,38 +369,53 @@ const ViewInstallmentModal: React.FC<ViewInstallmentModalProps> = ({
             <div className="flex justify-center flex-wrap gap-x-[20px] gap-y-3">
               {/* Botão 1: Orçamento (NotebookPen) */}
               <button
-                // Borda corrigida e ícone correto
-                className="btn-ghost w-[110px] h-[28px] justify-center border border-[var(--orange-primary)] rounded-md text-[10px] text-[var(--orange-primary)] gap-1"
+                // ADICIONADO: group para habilitar o group-hover no ícone
+                // AJUSTADO: gap-2 para centralização visual
+                className="group btn-action w-[110px] h-[28px] justify-center border-2 border-[var(--orange-primary)] rounded-md text-[10px] text-[var(--orange-primary)] gap-2"
                 title="Visualizar Orçamento"
               >
-                <NotebookPen size={18} style={iconStyle} />
+                {/* CORREÇÃO: Cor base do ícone por classe + Hover para branco. Removido style={iconStyle} */}
+                <NotebookPen
+                  size={18}
+                  className="text-[var(--orange-primary)] group-hover:text-white transition-colors"
+                />
                 <span className="whitespace-nowrap">Orçamento</span>
               </button>
 
               {/* Botão 2: Pedido (ClipboardList) */}
               <button
-                className="btn-ghost w-[110px] h-[28px] justify-center border border-[var(--orange-primary)] rounded-md text-[10px] text-[var(--orange-primary)] gap-1"
+                className="group btn-action w-[110px] h-[28px] justify-center border-2 border-[var(--orange-primary)] rounded-md text-[10px] text-[var(--orange-primary)] gap-2"
                 title="Visualizar Pedido"
               >
-                <ClipboardList size={18} style={iconStyle} />
+                <ClipboardList
+                  size={18}
+                  className="text-[var(--orange-primary)] group-hover:text-white transition-colors"
+                />
                 <span className="whitespace-nowrap">Pedido</span>
               </button>
 
               {/* Botão 3: Nota Fiscal (File) */}
               <button
-                className="btn-ghost w-[110px] h-[28px] justify-center border border-[var(--orange-primary)] rounded-md text-[10px] text-[var(--orange-primary)] gap-1"
+                className="group btn-action w-[110px] h-[28px] justify-center border-2 border-[var(--orange-primary)] rounded-md text-[10px] text-[var(--orange-primary)] gap-2"
                 title="Visualizar Nota Fiscal"
               >
-                <File size={18} style={iconStyle} />
+                <File
+                  size={18}
+                  className="text-[var(--orange-primary)] group-hover:text-white transition-colors"
+                />
                 <span className="whitespace-nowrap">Nota</span>
               </button>
 
               {/* Botão 4: Anexo (Paperclip) */}
               <button
-                className="btn-ghost w-[110px] h-[28px] justify-center border border-[var(--orange-primary)] rounded-md text-[10px] text-[var(--orange-primary)] gap-1"
+                className="group btn-action w-[110px] h-[28px] justify-center border-2 border-[var(--orange-primary)] rounded-md text-[10px] text-[var(--orange-primary)] gap-2"
                 title="Visualizar Anexo"
               >
-                <Paperclip size={18} style={iconStyle} />
+                {/* Ícone corrigido */}
+                <Paperclip
+                  size={18}
+                  className="text-[var(--orange-primary)] group-hover:text-white transition-colors"
+                />
                 <span className="whitespace-nowrap">Anexo</span>
               </button>
             </div>

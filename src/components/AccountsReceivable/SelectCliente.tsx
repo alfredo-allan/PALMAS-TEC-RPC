@@ -87,13 +87,13 @@ export default function SelectCliente({
       <PopoverTrigger asChild>
         <div
           className="
-    w-full              /* mobile/tablet */
-    lg:w-[730px]        /* desktop */
+    w-full
+    lg:w-[930px]
     h-[28px]
     flex items-center
     border border-gray-300 dark:border-gray-600
     rounded
-    px-2
+    px-3
     bg-white dark:bg-slate-800
     text-sm
     cursor-pointer
