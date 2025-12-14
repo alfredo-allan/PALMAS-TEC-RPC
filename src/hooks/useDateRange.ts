@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import {
   addDays,
   startOfWeek,
@@ -8,35 +8,40 @@ import {
   endOfMonth,
   subMonths,
   Locale,
+  startOfDay,
+  endOfDay,
 } from "date-fns";
-import { Range } from "react-date-range"; // <--- CORREÇÃO: Importar Range em vez de DateRange
+import { ptBR } from "date-fns/locale";
 
-// 1. Definição do Formato da Seleção
-// CORREÇÃO: Usando a interface Range correta
-export const defaultSelection: Range = {
-  startDate: new Date(),
-  endDate: new Date(),
-  key: "selection",
-};
+// Interface auxiliar para garantir a tipagem
+interface DefinedRange {
+  label: string;
+  range: () => { startDate: Date; endDate: Date };
+}
 
-// 2. Definição dos Presets (RANGES) conforme seu layout
-const definedRanges = (locale?: Locale) => [
+// 2. Definição dos Presets (RANGES) usando ptBR para cálculos de semana/mês
+const definedRanges = (locale: Locale = ptBR): DefinedRange[] => [
   {
-    label: "Hoje",
-    // CORREÇÃO: O objeto retornado é um Range, que deve ter startDate e endDate
+    label: "Prazo",
     range: () => ({
       startDate: new Date(),
       endDate: new Date(),
     }),
   },
   {
-    label: "Ontem",
+    label: "Hoje",
     range: () => ({
-      startDate: subDays(new Date(), 1),
-      endDate: subDays(new Date(), 1),
+      startDate: startOfDay(new Date()),
+      endDate: endOfDay(new Date()),
     }),
   },
-  // ... (Resto dos presets mantidos e funcionando com o tipo Range implícito) ...
+  {
+    label: "Ontem",
+    range: () => ({
+      startDate: startOfDay(subDays(new Date(), 1)),
+      endDate: endOfDay(subDays(new Date(), 1)),
+    }),
+  },
   {
     label: "Esta semana",
     range: () => ({
@@ -68,58 +73,96 @@ const definedRanges = (locale?: Locale) => [
   {
     label: "Últimos 30 dias",
     range: () => ({
-      startDate: subDays(new Date(), 29),
-      endDate: new Date(),
+      startDate: startOfDay(subDays(new Date(), 29)),
+      endDate: endOfDay(new Date()),
     }),
   },
   {
     label: "Últimos 90 dias",
     range: () => ({
-      startDate: subDays(new Date(), 89),
-      endDate: new Date(),
+      startDate: startOfDay(subDays(new Date(), 89)),
+      endDate: endOfDay(new Date()),
     }),
   },
   {
     label: "Últimos 180 dias",
     range: () => ({
-      startDate: subDays(new Date(), 179),
-      endDate: new Date(),
+      startDate: startOfDay(subDays(new Date(), 179)),
+      endDate: endOfDay(new Date()),
     }),
   },
   {
     label: "Tudo",
     range: () => ({
-      startDate: subDays(new Date(), 365 * 10),
-      endDate: new Date(),
+      startDate: startOfDay(subDays(new Date(), 365 * 10)), // 10 anos
+      endDate: endOfDay(new Date()),
     }),
   },
 ];
 
 // 3. O Hook principal
 export const useDateRange = () => {
-  // CORREÇÃO: Inicializar o estado como Range[]
-  const [range, setRange] = useState<Range[]>([defaultSelection]);
+  const [range, setRange] = useState<{
+    startDate: Date | null;
+    endDate: Date | null;
+  }>({
+    startDate: null,
+    endDate: null,
+  });
 
-  const handleSelect = (ranges: any) => {
-    // ranges.selection é do tipo Range, então podemos atribuir
-    setRange([ranges.selection]);
-  };
+  const handleSelect = useCallback((type: "start" | "end", date: Date) => {
+    setRange((prev) => {
+      const newDate = startOfDay(date);
 
-  const handleClear = () => {
-    setRange([defaultSelection]);
-  };
+      if (type === "start") {
+        // Se já existe data final e a nova data inicial é depois dela, ajusta
+        if (prev.endDate && newDate > prev.endDate) {
+          return {
+            startDate: newDate,
+            endDate: newDate,
+          };
+        }
+        return {
+          ...prev,
+          startDate: newDate,
+        };
+      } else {
+        // Se já existe data inicial e a nova data final é antes dela, ajusta
+        if (prev.startDate && newDate < prev.startDate) {
+          return {
+            startDate: newDate,
+            endDate: newDate,
+          };
+        }
+        return {
+          ...prev,
+          endDate: newDate,
+        };
+      }
+    });
+  }, []);
 
-  // Definindo a interface para o preset, para ser usada no Modal
-  interface DefinedRange {
-    label: string;
-    range: () => { startDate: Date; endDate: Date };
-  }
+  const handlePresetSelect = useCallback((presetLabel: string) => {
+    const preset = definedRanges().find((p) => p.label === presetLabel);
+    if (preset) {
+      const range = preset.range();
+      setRange({
+        startDate: range.startDate,
+        endDate: range.endDate,
+      });
+    }
+  }, []);
+
+  const clearRange = useCallback(() => {
+    setRange({ startDate: null, endDate: null });
+  }, []);
 
   return {
     range,
-    definedRanges: definedRanges() as DefinedRange[], // Tipando o array de retorno
+    definedRanges: definedRanges(),
     handleSelect,
-    handleClear,
-    defaultSelection,
+    handlePresetSelect,
+    clearRange,
+    locale: ptBR,
   };
 };
