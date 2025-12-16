@@ -756,7 +756,7 @@ const DualCalendarModal: React.FC<DualCalendarModalProps> = ({
         <button
           onClick={() => setShowPresetsMenu(!showPresetsMenu)}
           // Removido o bg-orange-primary e hover
-          className={`fixed top-0.5 left-4 z-50 p-3 rounded md:flex md:relative md:top-[-455px] md:left-[40px]
+          className={`fixed top-[15px] left-4 z-50 p-3 rounded-sm md:flex md:relative md:top-[-499px] md:left-[40px]
 bg-transparent hover:bg-transparent transition-colors sm:left-[15px]`}
         >
           {/* Ícone agora usa a cor primária (laranja) */}
@@ -770,7 +770,7 @@ bg-transparent hover:bg-transparent transition-colors sm:left-[15px]`}
             onClick={() => setShowPresetsMenu(false)}
           >
             <div
-              className="absolute top-20 left-4 right-4 bg-white dark:bg-slate-800 rounded-xl shadow-2xl p-4 max-h-[70vh] max-w-[90%] overflow-y-auto md:relative md:left-[50px] md:right-[63px] md:top-[110px]"
+              className="absolute top-20 left-4 right-4 bg-white dark:bg-slate-800 rounded-xl shadow-2xl p-4 max-h-[70vh] max-w-[100%] overflow-y-auto md:relative md:left-[50px] md:right-[63px] md:top-[110px] md:w-[90%]"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex justify-between items-center mb-4">
@@ -831,7 +831,7 @@ bg-transparent hover:bg-transparent transition-colors sm:left-[15px]`}
       <HamburgerMenu />
 
       <div
-        className={`rounded-xl shadow-2xl w-full max-w-[90vw] sm:max-w-[90vw] lg:max-w-[1050px] max-h-[100vh] overflow-hidden md:relative md:left-[-14px] ${
+        className={`rounded-xl shadow-2xl w-full max-w-[100%] sm:max-w-[100%] h-full lg:max-w-[1050px] max-h-[100vh] overflow-hidden md:relative md:left-[-14px] lg:h-[678px] ${
           isDarkMode ? "bg-slate-800" : "bg-white"
         }`}
       >
@@ -856,7 +856,7 @@ bg-transparent hover:bg-transparent transition-colors sm:left-[15px]`}
           </button>
         </div>
 
-        <div className="flex flex-col lg:flex-row h-[calc(90vh-140px)] overflow-hidden">
+        <div className="flex flex-col lg:flex-row  overflow-hidden h-[500px] md:h-[921px] md:mx-auto">
           {/* Sidebar de presets - visível apenas no desktop */}
           {!isMobile && !isTablet && (
             <div className="lg:w-64 border-b lg:border-b-0 lg:border-r dark:border-slate-700 p-4 overflow-y-auto lg:h-[557px]">
@@ -910,10 +910,10 @@ bg-transparent hover:bg-transparent transition-colors sm:left-[15px]`}
         </div>
 
         {/* Footer */}
-        <div className="border-t dark:border-slate-700 p-4 lg:mt-[-270px]">
+        <div className="border-t dark:border-slate-700 p-4 lg:mt-[-364px] md:mt-[-319px]">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-              <div className="flex items-center gap-3">
+              <div className="lg:Flex items-center gap-3 grid md:flex">
                 <div className="flex items-center gap-2">
                   <span
                     className={`font-medium ${
@@ -963,7 +963,7 @@ bg-transparent hover:bg-transparent transition-colors sm:left-[15px]`}
 
               <button
                 onClick={handleClear}
-                className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors md:w-[300px] ${
                   isDarkMode
                     ? "text-gray-400 hover:text-gray-200 hover:bg-slate-700"
                     : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
@@ -973,10 +973,10 @@ bg-transparent hover:bg-transparent transition-colors sm:left-[15px]`}
               </button>
             </div>
 
-            <div className="flex gap-3">
+            <div className="flex lg:gap-3 md:justify-center md:gap-[10px] md:relative md:top-[120px] md:left-[-660px] md:flex">
               <button
                 onClick={onClose}
-                className={`px-5 py-2.5 rounded-lg font-medium transition-colors ${
+                className={`px-5 py-2.5 rounded-lg font-medium transition-colors mr-[127px] md:w-[300px] md:m-[0px] md:mr-[36px]  ${
                   isDarkMode
                     ? "bg-slate-700 hover:bg-slate-600 text-gray-300"
                     : "bg-gray-200 hover:bg-gray-300 text-gray-700"
@@ -986,7 +986,7 @@ bg-transparent hover:bg-transparent transition-colors sm:left-[15px]`}
               </button>
               <button
                 onClick={handleApply}
-                className="px-5 py-2.5 rounded-lg bg-[var(--orange-primary)] hover:bg-orange-600 text-white font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-5 py-2.5 rounded-lg bg-[var(--orange-primary)] hover:bg-orange-600 text-white font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed md:m-[0px] md:w-[300px]"
                 disabled={!startDate || !endDate}
               >
                 Aplicar
