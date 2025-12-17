@@ -213,12 +213,12 @@ const DataFilter: React.FC<DataFilterProps> = ({ filters, onFilterChange }) => {
   return (
     <>
       <div className="bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 shadow-sm">
-        <div className="max-w-full mx-auto px-[10px] py-[10px] lg:py-0">
-          <div className="flex flex-col lg:flex-row gap-6   lg:px-[10px] lg:pt-[10px] lg:pb-[10px] ">
+        <div className="max-w-full mx-auto px-[5px] py-[5px] lg:py-1">
+          <div className="flex flex-col lg:flex-row gap-2 lg:px-[-5px] lg:pt-[-5px] lg:pb-[-5px] ">
             {/* Coluna Esquerda */}
-            <div className="flex-mb-[-10px]">
+            <div className="flex-mb-[-5px]">
               {leftColumnFilters.map((item, i) => (
-                <div key={i} className="-mb-[-10px]">
+                <div key={i} className="-mb-[-5px]">
                   <label
                     className="block text-sm font-semibold"
                     style={{
@@ -234,11 +234,11 @@ const DataFilter: React.FC<DataFilterProps> = ({ filters, onFilterChange }) => {
             </div>
 
             {/* Coluna Direita */}
-            <div className="flex-mb-[-10px]">
+            <div className="flex-mb-[-5px]">
               {/* Período + Tipo Data */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {rightColumnFirstRow.map((item, i) => (
-                  <div key={i} className="-mb-[-10px]">
+                  <div key={i} className="-mb-[-5px]">
                     <label
                       className="block text-sm font-semibold"
                       style={{
