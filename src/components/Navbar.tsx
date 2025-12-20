@@ -272,7 +272,7 @@ const NavBar: React.FC<NavBarProps> = ({
                   fixed left-0 right-0 w-screen
                   shadow-lg z-50 border-t-2 border-b-2
                   top-[42px]
-                  lg:max-h-[60vh] lg:overflow-y-auto
+                  lg:max-h-[280px] lg:overflow-y-auto
                   max-lg:h-[calc(100vh-42px)]
                   animate-in fade-in slide-in-from-top-2 duration-200
                 "
